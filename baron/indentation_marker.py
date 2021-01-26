@@ -1,5 +1,6 @@
 from .utils import FlexibleIterator
 
+
 """
 Objective: add an INDENT token and a DEDENT token arround every block.
 
