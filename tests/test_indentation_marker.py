@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding:Utf-8 -*-
 # flake8: noqa
+import pytest
 
 from baron.indentation_marker import mark_indentation
 from .test_utils import zip_longest
@@ -369,6 +370,7 @@ def test_tab_and_spaces_because_some_people_are_horrible():
     ])
 
 
+@pytest.mark.skip
 def test_comment_in_middle_of_ifelseblock():
     check([
         ('ENDL', '\n'),
