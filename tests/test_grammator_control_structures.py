@@ -2,7 +2,9 @@
 # -*- coding:Utf-8 -*-
 
 import pytest
+
 from baron.parser import ParsingError
+
 from .test_utils import parse_multi
 
 
@@ -1118,6 +1120,7 @@ def test_try_finally_stmt_indent():
             "finally": {
                 "type": "finally",
                 "first_formatting": [{"type": "space", "value": " "}],
+                "leading_comments": [],
                 "second_formatting": [],
                 "value": [
                     {
@@ -1645,6 +1648,7 @@ def test_try_except_comma_stmt_else_finally_indent():
             "finally": {
                 "type": "finally",
                 "first_formatting": [],
+                "leading_comments": [],
                 "second_formatting": [],
                 "value": [
                     {
@@ -1764,6 +1768,7 @@ def test_try_except_comma_stmt_finally_indent():
             "finally": {
                 "type": "finally",
                 "first_formatting": [],
+                "leading_comments": [],
                 "second_formatting": [],
                 "value": [
                     {
@@ -1921,6 +1926,84 @@ def test_try_except_as_stmt_indent():
                 {
                     "formatting": [],
                     "indent": "",
+                    "type": "endl",
+                    "value": "\n"
+                }
+            ],
+        }
+    ])
+
+
+def test_try_finally_comment():
+    """
+    try:
+        pass
+    # comment
+    finally:
+        pass
+    """
+    parse_multi([
+        ('TRY', 'try'),
+        ('COLON', ':', []),
+        ('ENDL', '\n', [], [('SPACE', '    ')]),
+        ('INDENT', ''),
+        ('PASS', 'pass'),
+        ('ENDL', '\n'),
+        ('DEDENT', ''),
+        ('COMMENT', '# comment'),
+        ('FINALLY', 'finally'),
+        ('COLON', ':', []),
+        ('ENDL', '\n', [], [('SPACE', '    ')]),
+        ('INDENT', ''),
+        ('PASS', 'pass'),
+        ('ENDL', '\n'),
+        ('DEDENT', ''),
+    ], [
+        {
+            "type": "try",
+            "first_formatting": [],
+            "second_formatting": [],
+            "else": {},
+            "finally": {
+                "type": "finally",
+                "first_formatting": [],
+                "leading_comments": [{
+                    "type": "comment",
+                    "value": "# comment"
+                }],
+                "second_formatting": [],
+                "value": [
+                    {
+                        "type": "endl",
+                        "value": "\n",
+                        "formatting": [],
+                        "indent": "    "
+                    },
+                    {
+                        "type": "pass",
+                    },
+                    {
+                        "indent": "",
+                        "formatting": [],
+                        "type": "endl",
+                        "value": "\n"
+                    }
+                ],
+            },
+            "excepts": [],
+            "value": [
+                {
+                    "type": "endl",
+                    "value": "\n",
+                    "formatting": [],
+                    "indent": "    "
+                },
+                {
+                    "type": "pass",
+                },
+                {
+                    "indent": "",
+                    "formatting": [],
                     "type": "endl",
                     "value": "\n"
                 }

@@ -138,12 +138,24 @@ def include_control_structures(pg):
             "value": suite
         }]
 
-    @pg.production("finally_stmt : FINALLY COLON suite")
+    @pg.production("leading_comments : COMMENT leading_comments")
+    @pg.production("leading_comments : ")
+    def leading_comments(pack):
+        if not pack:
+            return []
+        (comment, more_comments) = pack
+        return [{
+            "type": "comment",
+            "value": comment.value,
+        }] + more_comments
+
+    @pg.production("finally_stmt : leading_comments FINALLY COLON suite")
     def finally_stmt(pack):
-        (finally_, colon, suite) = pack
+        (leading_comments, finally_, colon, suite) = pack
         return {
             "type": "finally",
             "value": suite,
+            "leading_comments": leading_comments,
             "first_formatting": colon.hidden_tokens_before,
             "second_formatting": colon.hidden_tokens_after,
         }
