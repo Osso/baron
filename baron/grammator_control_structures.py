@@ -74,11 +74,12 @@ def include_control_structures(pg):
         (except_stmt,) = pack
         return except_stmt
 
-    @pg.production("except_stmt : EXCEPT test AS test COLON suite")
+    @pg.production("except_stmt : leading_comments EXCEPT test AS test COLON suite")
     def except_as_stmt(pack):
-        (except_, test, as_, test2, colon, suite) = pack
+        (leading_comments, except_, test, as_, test2, colon, suite) = pack
         return [{
             "type": "except",
+            "leading_comments": leading_comments,
             "first_formatting": except_.hidden_tokens_after,
             "second_formatting": as_.hidden_tokens_before,
             "third_formatting": as_.hidden_tokens_after,
@@ -90,11 +91,12 @@ def include_control_structures(pg):
             "value": suite
         }]
 
-    @pg.production("except_stmt : EXCEPT test COMMA test COLON suite")
+    @pg.production("except_stmt : leading_comments EXCEPT test COMMA test COLON suite")
     def except_comma_stmt(pack):
-        (except_, test, comma, test2, colon, suite) = pack
+        (leading_comments, except_, test, comma, test2, colon, suite) = pack
         return [{
             "type": "except",
+            "leading_comments": leading_comments,
             "first_formatting": except_.hidden_tokens_after,
             "second_formatting": comma.hidden_tokens_before,
             "third_formatting": comma.hidden_tokens_after,
@@ -106,11 +108,12 @@ def include_control_structures(pg):
             "value": suite
         }]
 
-    @pg.production("except_stmt : EXCEPT COLON suite")
+    @pg.production("except_stmt : leading_comments EXCEPT COLON suite")
     def except_stmt_empty(pack):
-        (except_, colon, suite) = pack
+        (leading_comments, except_, colon, suite) = pack
         return [{
             "type": "except",
+            "leading_comments": leading_comments,
             "first_formatting": except_.hidden_tokens_after,
             "second_formatting": [],
             "third_formatting": [],
@@ -122,11 +125,12 @@ def include_control_structures(pg):
             "value": suite
         }]
 
-    @pg.production("except_stmt : EXCEPT test COLON suite")
+    @pg.production("except_stmt : leading_comments EXCEPT test COLON suite")
     def except_stmt(pack):
-        (except_, test, colon, suite) = pack
+        (leading_comments, except_, test, colon, suite) = pack
         return [{
             "type": "except",
+            "leading_comments": leading_comments,
             "first_formatting": except_.hidden_tokens_after,
             "second_formatting": [],
             "third_formatting": [],
@@ -138,15 +142,20 @@ def include_control_structures(pg):
             "value": suite
         }]
 
-    @pg.production("leading_comments : COMMENT leading_comments")
+    @pg.production("leading_comments : COMMENT ENDL leading_comments")
     @pg.production("leading_comments : ")
     def leading_comments(pack):
         if not pack:
             return []
-        (comment, more_comments) = pack
+        (comment, endl, more_comments) = pack
         return [{
             "type": "comment",
             "value": comment.value,
+        }, {
+            "type": "endl",
+            "value": endl.value,
+            "formatting": endl.hidden_tokens_before,
+            "indent": endl.hidden_tokens_after[0]["value"] if endl.hidden_tokens_after else "",
         }] + more_comments
 
     @pg.production("finally_stmt : leading_comments FINALLY COLON suite")
@@ -160,12 +169,13 @@ def include_control_structures(pg):
             "second_formatting": colon.hidden_tokens_after,
         }
 
-    @pg.production("else_stmt : ELSE COLON suite")
+    @pg.production("else_stmt : leading_comments ELSE COLON suite")
     def else_stmt(pack):
-        (else_, colon, suite) = pack
+        (leading_comments, else_, colon, suite) = pack
         return {
             "type": "else",
             "value": suite,
+            "leading_comments": leading_comments,
             "first_formatting": else_.hidden_tokens_after,
             "second_formatting": colon.hidden_tokens_after,
         }
@@ -262,11 +272,12 @@ def include_control_structures(pg):
             }] + elifs
         }]
 
-    @pg.production("elifs : elifs ELIF test COLON suite")
+    @pg.production("elifs : elifs leading_comments ELIF test COLON suite")
     def elifs_elif(pack,):
-        (elifs, elif_, test, colon, suite) = pack
+        (elifs, leading_comments, elif_, test, colon, suite) = pack
         return elifs + [{
             "type": "elif",
+            "leading_comments": leading_comments,
             "first_formatting": elif_.hidden_tokens_after,
             "second_formatting": colon.hidden_tokens_before,
             "third_formatting": colon.hidden_tokens_after,
@@ -274,11 +285,12 @@ def include_control_structures(pg):
             "test": test,
         }]
 
-    @pg.production("elifs : ELIF test COLON suite")
+    @pg.production("elifs : leading_comments ELIF test COLON suite")
     def elif_(pack,):
-        (elif_, test, colon, suite) = pack
+        (leading_comments, elif_, test, colon, suite) = pack
         return [{
             "type": "elif",
+            "leading_comments": leading_comments,
             "first_formatting": elif_.hidden_tokens_after,
             "second_formatting": colon.hidden_tokens_before,
             "third_formatting": colon.hidden_tokens_after,
