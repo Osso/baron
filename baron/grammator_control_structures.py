@@ -151,6 +151,7 @@ def include_control_structures(pg):
         return [{
             "type": "comment",
             "value": comment.value,
+            "formatting": comment.hidden_tokens_before,
         }, {
             "type": "endl",
             "value": endl.value,

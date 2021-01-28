@@ -1990,7 +1990,8 @@ def test_try_finally_leading_comment():
                 "first_formatting": [],
                 "leading_comments": [{
                     "type": "comment",
-                    "value": "# comment"
+                    "value": "# comment",
+                    "formatting": [],
                 }, {
                     "type": "endl",
                     "value": "\n",
@@ -2077,7 +2078,8 @@ def test_try_except_leading_comment():
                 "first_formatting": [],
                 "leading_comments": [{
                     "type": "comment",
-                    "value": "# comment"
+                    "value": "# comment",
+                    "formatting": [],
                 }, {
                     "type": "endl",
                     "value": "\n",
