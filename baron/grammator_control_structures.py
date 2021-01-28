@@ -74,9 +74,9 @@ def include_control_structures(pg):
         (except_stmt,) = pack
         return except_stmt
 
-    @pg.production("except_stmt : leading_comments EXCEPT test AS test COLON suite")
+    @pg.production("except_stmt : leading_comments EXCEPT test AS test COLON suite leading_comments")
     def except_as_stmt(pack):
-        (leading_comments, except_, test, as_, test2, colon, suite) = pack
+        (leading_comments, except_, test, as_, test2, colon, suite, leading_comments2) = pack
         return [{
             "type": "except",
             "leading_comments": leading_comments,
@@ -89,11 +89,11 @@ def include_control_structures(pg):
             "target": test2,
             "exception": test,
             "value": suite
-        }]
+        }] + leading_comments2
 
-    @pg.production("except_stmt : leading_comments EXCEPT test COMMA test COLON suite")
+    @pg.production("except_stmt : leading_comments EXCEPT test COMMA test COLON suite leading_comments")
     def except_comma_stmt(pack):
-        (leading_comments, except_, test, comma, test2, colon, suite) = pack
+        (leading_comments, except_, test, comma, test2, colon, suite, leading_comments2) = pack
         return [{
             "type": "except",
             "leading_comments": leading_comments,
@@ -106,11 +106,11 @@ def include_control_structures(pg):
             "target": test2,
             "exception": test,
             "value": suite
-        }]
+        }] + leading_comments2
 
-    @pg.production("except_stmt : leading_comments EXCEPT COLON suite")
+    @pg.production("except_stmt : leading_comments EXCEPT COLON suite leading_comments")
     def except_stmt_empty(pack):
-        (leading_comments, except_, colon, suite) = pack
+        (leading_comments, except_, colon, suite, leading_comments2) = pack
         return [{
             "type": "except",
             "leading_comments": leading_comments,
@@ -123,11 +123,11 @@ def include_control_structures(pg):
             "target": {},
             "exception": {},
             "value": suite
-        }]
+        }] + leading_comments2
 
-    @pg.production("except_stmt : leading_comments EXCEPT test COLON suite")
+    @pg.production("except_stmt : leading_comments EXCEPT test COLON suite leading_comments")
     def except_stmt(pack):
-        (leading_comments, except_, test, colon, suite) = pack
+        (leading_comments, except_, test, colon, suite, leading_comments2) = pack
         return [{
             "type": "except",
             "leading_comments": leading_comments,
@@ -140,7 +140,7 @@ def include_control_structures(pg):
             "target": {},
             "exception": test,
             "value": suite
-        }]
+        }] + leading_comments2
 
     @pg.production("leading_comments : COMMENT ENDL leading_comments")
     @pg.production("leading_comments : ")
@@ -180,9 +180,9 @@ def include_control_structures(pg):
             "second_formatting": colon.hidden_tokens_after,
         }
 
-    @pg.production("for_stmt : FOR exprlist IN testlist COLON suite")
+    @pg.production("for_stmt : FOR exprlist IN testlist COLON suite leading_comments")
     def for_stmt(pack,):
-        (for_, exprlist, in_, testlist, colon, suite) = pack
+        (for_, exprlist, in_, testlist, colon, suite, leading_comments) = pack
         return [{
             "type": "for",
             "async": False,
@@ -196,7 +196,7 @@ def include_control_structures(pg):
             "third_formatting": in_.hidden_tokens_after,
             "fourth_formatting": colon.hidden_tokens_before,
             "fifth_formatting": colon.hidden_tokens_after,
-        }]
+        }] + leading_comments
 
     @pg.production("for_stmt : FOR exprlist IN testlist COLON suite else_stmt")
     def for_else_stmt(pack,):
@@ -216,9 +216,9 @@ def include_control_structures(pg):
             "fifth_formatting": colon.hidden_tokens_after,
         }]
 
-    @pg.production("while_stmt : WHILE test COLON suite")
+    @pg.production("while_stmt : WHILE test COLON suite leading_comments")
     def while_stmt(pack):
-        (while_, test, colon, suite) = pack
+        (while_, test, colon, suite, leading_comments) = pack
         return [{
             "type": "while",
             "value": suite,
@@ -227,7 +227,7 @@ def include_control_structures(pg):
             "first_formatting": while_.hidden_tokens_after,
             "second_formatting": colon.hidden_tokens_before,
             "third_formatting": colon.hidden_tokens_after,
-        }]
+        }] + leading_comments
 
     @pg.production("while_stmt : WHILE test COLON suite else_stmt")
     def while_stmt_else(pack):
@@ -249,13 +249,13 @@ def include_control_structures(pg):
             "type": "ifelseblock",
             "value": [{
                 "type": "if",
-                "value": suite + leading_comments,
+                "value": suite,
                 "test": test,
                 "first_formatting": if_.hidden_tokens_after,
                 "second_formatting": colon.hidden_tokens_before,
                 "third_formatting": colon.hidden_tokens_after,
             }]
-        }]
+        }] + leading_comments
 
     @pg.production("if_stmt : IF test COLON suite elifs")
     def if_elif_stmt(pack):

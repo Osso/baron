@@ -42,3 +42,43 @@ if cond:
     pass
 """
     assert dumps(parse(code)) == code
+
+
+def test_comment_before_while():
+    code = """
+while cond:
+    pass
+
+# comment
+while cond:
+    pass
+"""
+    assert dumps(parse(code)) == code
+
+
+def test_comment_before_for():
+    code = """
+for var in iter:
+    pass
+
+# comment
+for var in iter:
+    pass
+"""
+    assert dumps(parse(code)) == code
+
+
+def test_comment_before_try():
+    code = """
+try:
+    pass
+except:
+    pass
+
+# comment
+try:
+    pass
+except:
+    pass
+"""
+    assert dumps(parse(code)) == code
