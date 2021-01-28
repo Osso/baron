@@ -242,14 +242,14 @@ def include_control_structures(pg):
             "third_formatting": colon.hidden_tokens_after,
         }]
 
-    @pg.production("if_stmt : IF test COLON suite")
+    @pg.production("if_stmt : IF test COLON suite leading_comments")
     def if_stmt(pack):
-        (if_, test, colon, suite) = pack
+        (if_, test, colon, suite, leading_comments) = pack
         return [{
             "type": "ifelseblock",
             "value": [{
                 "type": "if",
-                "value": suite,
+                "value": suite + leading_comments,
                 "test": test,
                 "first_formatting": if_.hidden_tokens_after,
                 "second_formatting": colon.hidden_tokens_before,
