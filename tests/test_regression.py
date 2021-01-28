@@ -30,3 +30,15 @@ def test_comment_in_middle_of_ifelseblock():
 def test_comment_in_middle_of_try():
     code = 'try:\n    pass\n# comment\nexcept:\n    pass\n'
     assert dumps(parse(code)) == code
+
+
+def test_comment_before_if():
+    code = """
+if cond:
+    pass
+
+# comment
+if cond:
+    pass
+"""
+    assert dumps(parse(code)) == code
