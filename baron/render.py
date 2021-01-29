@@ -688,7 +688,6 @@ nodes_rendering_order = {
     ],
 
     "elif": [
-        ("list",       "leading_comments",  True),  # noqa
         ("constant",   "elif",              True),  # noqa
         ("formatting", "first_formatting",  True),  # noqa
         ("key",        "test",              True),  # noqa
@@ -699,7 +698,6 @@ nodes_rendering_order = {
     ],
 
     "else": [
-        ("list",       "leading_comments",  True),  # noqa
         ("constant",   "else",              True),  # noqa
         ("formatting", "first_formatting",  True),  # noqa
         ("constant",   ":",                 True),  # noqa
@@ -729,7 +727,6 @@ nodes_rendering_order = {
     ],
 
     "except": [
-        ("list",       "leading_comments",  True),  # noqa
         ("constant",   "except",            True),  # noqa
         ("formatting", "first_formatting",  True),  # noqa
         ("key",        "exception",         "exception"),  # noqa
@@ -744,7 +741,6 @@ nodes_rendering_order = {
     ],
 
     "finally": [
-        ("list",       "leading_comments",  True),  # noqa
         ("constant",   "finally",           True),  # noqa
         ("formatting", "first_formatting",  True),  # noqa
         ("constant",   ":",                 True),  # noqa
