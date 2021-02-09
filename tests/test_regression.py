@@ -82,3 +82,17 @@ except:
     pass
 """
     assert dumps(parse(code)) == code
+
+
+def test_comment_after_try_else():
+    code = """
+try:
+    pass
+except:
+    pass
+else:
+    pass
+# comment
+call()
+"""
+    assert dumps(parse(code)) == code

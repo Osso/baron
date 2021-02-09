@@ -12,9 +12,9 @@ def include_control_structures(pg):
             "excepts": excepts,
         }]
 
-    @pg.production("try_stmt : TRY COLON suite_opt_comments excepts_opt_comments else_stmt")
+    @pg.production("try_stmt : TRY COLON suite_opt_comments excepts_opt_comments else_stmt leading_comments")
     def try_excepts_else_stmt(pack):
-        (try_, colon, suite, excepts, else_stmt) = pack
+        (try_, colon, suite, excepts, else_stmt, leading_comments) = pack
         return [{
             "type": "try",
             "value": suite,
@@ -23,7 +23,7 @@ def include_control_structures(pg):
             "else": else_stmt,
             "finally": {},
             "excepts": excepts,
-        }]
+        }] + leading_comments
 
     @pg.production("try_stmt : TRY COLON suite_opt_comments excepts_opt_comments finally_stmt")
     def try_excepts_finally_stmt(pack):
