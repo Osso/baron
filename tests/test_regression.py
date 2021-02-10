@@ -96,3 +96,25 @@ else:
 call()
 """
     assert dumps(parse(code)) == code
+
+
+def test_elif_with_empty_lines():
+    code = """
+if cond:
+    pass
+
+# ******************
+# comment
+# ******************
+
+elif cond:
+    pass
+
+# ****************
+# comment
+# ****************
+
+else:
+    pass
+"""
+    assert dumps(parse(code)) == code

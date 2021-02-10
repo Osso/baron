@@ -150,12 +150,8 @@ def include_control_structures(pg):
         (suite, leading_comments) = pack
         return suite + leading_comments
 
-
     @pg.production("leading_comments : COMMENT ENDL leading_comments")
-    @pg.production("leading_comments : ")
     def leading_comments(pack):
-        if not pack:
-            return []
         (comment, endl, more_comments) = pack
         return [{
             "type": "comment",
@@ -167,6 +163,20 @@ def include_control_structures(pg):
             "formatting": endl.hidden_tokens_before,
             "indent": endl.hidden_tokens_after[0]["value"] if endl.hidden_tokens_after else "",
         }] + more_comments
+
+    @pg.production("leading_comments : ENDL leading_comments")
+    def leading_comments_empty_line(pack):
+        (endl, more_comments) = pack
+        return [{
+            "type": "endl",
+            "value": endl.value,
+            "formatting": endl.hidden_tokens_before,
+            "indent": endl.hidden_tokens_after[0]["value"] if endl.hidden_tokens_after else "",
+        }]
+
+    @pg.production("leading_comments : ")
+    def leading_comments_end(pack):
+        return []
 
     @pg.production("finally_stmt : FINALLY COLON suite")
     def finally_stmt(pack):
