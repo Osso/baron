@@ -172,7 +172,7 @@ def include_control_structures(pg):
             "value": endl.value,
             "formatting": endl.hidden_tokens_before,
             "indent": endl.hidden_tokens_after[0]["value"] if endl.hidden_tokens_after else "",
-        }]
+        }] + more_comments
 
     @pg.production("leading_comments : ")
     def leading_comments_end(pack):
