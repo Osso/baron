@@ -1,6 +1,10 @@
 import pytest
+
 from baron import parse
-from baron.render import render, node_types, nodes_rendering_order, RenderWalker
+from baron.render import (RenderWalker,
+                          node_types,
+                          nodes_rendering_order,
+                          render)
 
 
 @pytest.fixture(params=nodes_rendering_order.keys())
@@ -112,10 +116,10 @@ def test_walk_assignment():
                 ('<', 'string', ' ', 'value', False),
             ('<', 'node', 'space', 0, False),
         ('<', 'formatting', 'list', 'second_formatting', False),
-        ('>', 'key', 'int', 'value', False),
+        ('>', 'key', 'number', 'value', False),
             ('>', 'string', '1', 'value', False),
             ('<', 'string', '1', 'value', False),
-        ('<', 'key', 'int', 'value', False),
+        ('<', 'key', 'number', 'value', False),
     ('<', 'node', 'assignment', 0, False),
     ])
 

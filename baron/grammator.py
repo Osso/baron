@@ -1,14 +1,16 @@
-from .token import BaronToken
-from .parser import BaronParserGenerator
-
-from .tokenizer import TOKENS, tokenize, tokenize_current_keywords
-from .utils import create_node_from_token
-from .grammator_imports import include_imports
 from .grammator_control_structures import include_control_structures
-from .grammator_primitives import include_primivites
-from .grammator_operators import include_operators
 from .grammator_data_structures import include_data_structures
-from .parser import ParsingError
+from .grammator_imports import include_imports
+from .grammator_operators import include_operators
+from .grammator_primitives import include_primivites
+from .parser import (BaronParserGenerator,
+                     ParsingError)
+from .token import BaronToken
+from .tokenizer import (TOKENS,
+                        tokenize,
+                        tokenize_current_keywords)
+
+# pylint: disable=unused-variable
 
 
 def generate_parse(print_function):
@@ -756,8 +758,10 @@ def generate_parse(print_function):
     @pg.production("atom : FLOAT_EXPONANT_COMPLEX")
     @pg.production("atom : COMPLEX")
     def int(pack):
-        (int_,) = pack
-        return create_node_from_token(int_, section="number")
+        (number,) = pack
+        return {"type": "number",
+                "sub_type": number.name.lower(),
+                "value": number.value}
 
     @pg.production("atom : name")
     def atom_name(pack):
@@ -836,8 +840,3 @@ def fake_lexer(sequence):
         if i is None:
             yield None
         yield BaronToken(*i)
-
-
-def parse(sequence):
-    parser = generate_parse(print_function=False)
-    return parser.parse(fake_lexer(sequence))

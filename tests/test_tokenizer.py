@@ -2,7 +2,8 @@
 # -*- coding:Utf-8 -*-
 
 
-from baron.tokenizer import tokenize, KEYWORDS
+from baron.tokenizer import (KEYWORDS,
+                             tokenize)
 
 
 def match(string, token):
@@ -109,7 +110,7 @@ def test_floating_point_parser_bug_85():
                    'type': 'binary_operator',
                    'value': '*'},
          'first_formatting': [],
-         'second': {'section': 'number', 'type': 'int', 'value': '1'},
+         'second': {'type': 'number', 'sub_type': 'int', 'value': '1'},
          'second_formatting': [],
          'type': 'binary_operator',
          'value': '-'}]
@@ -417,10 +418,10 @@ def test_comment():
 
 def test_space():
     match(' ', 'SPACE')
-    match('	', 'SPACE')
-    match('	 ', 'SPACE')
-    match('	 \\\n ', 'SPACE')
-    match('	 \\\r\n ', 'SPACE')
+    match('    ', 'SPACE')
+    match('     ', 'SPACE')
+    match('     \\\n ', 'SPACE')
+    match('     \\\r\n ', 'SPACE')
 
 
 def test_arobase():

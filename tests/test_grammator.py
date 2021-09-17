@@ -1,8 +1,11 @@
 #!/usr/bin/python
 # -*- coding:Utf-8 -*-
 import pytest
+
 from baron.parser import ParsingError
-from .test_utils import parse_simple, parse_multi
+
+from .test_utils import (parse_multi,
+                         parse_simple)
 
 
 def test_empty():
@@ -14,8 +17,8 @@ def test_int():
     "1"
     parse_simple([('INT', '1')], [
         {
-            "type": "int",
-            "section": "number",
+            "type": "number",
+            "sub_type": "int",
             "value": "1",
         }
     ])
@@ -25,8 +28,8 @@ def test_long():
     "123234L"
     parse_simple([('LONG', '123234L')], [
         {
-            "type": "long",
-            "section": "number",
+            "type": "number",
+            "sub_type": "long",
             "value": "123234L",
         }
     ])
@@ -1056,9 +1059,9 @@ def test_funcdef_stmt_one_parameter_comma_default_indent():
                         "value": "x",
                     },
                     "value": {
-                        "type": "int",
+                        "type": "number",
+                        "sub_type": "int",
                         "value": "1",
-                        "section": "number",
                     },
                 },
                 {
@@ -1144,7 +1147,9 @@ def test_funcdef_stmt_two_parameters_typed_with_default_indent():
                         "type": "name",
                         "value": "x",
                     },
-                    "value": {"section": "number", "type": "int", "value": "1"},
+                    "value": {"type": "number",
+                              "sub_type": "int",
+                              "value": "1"},
                 },
                 {
                     "type": "comma",
@@ -2909,6 +2914,6 @@ def test_typed_variable_with_assignment():
             "annotation_second_formatting": [{"type": "space", "value": " "}],
             "target": {"type": "name", "value": "x"},
             "operator": "",
-            "value": {"section": "number", "type": "int", "value": "1"}
+            "value": {"type": "number", "sub_type": "int", "value": "1"}
         }
     ])

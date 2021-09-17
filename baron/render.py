@@ -117,16 +117,15 @@ def child_by_key(node, key):
 
 # for a surprising exception, we won't honnor pep8 here because it really increase lisibility
 nodes_rendering_order = {
-    "int":                       [("string", "value", True)],  # noqa
-    "long":                      [("string", "value", True)],  # noqa
+    "number": [
+        ("string", "sub_type", False),
+        ("string", "value", True)
+    ],  # noqa
     "name":                      [("string", "value", True)],  # noqa
     "hexa":                      [("string", "value", True)],  # noqa
     "octa":                      [("string", "value", True)],  # noqa
-    "float":                     [("string", "value", True)],  # noqa
     "space":                     [("string", "value", True)],  # noqa
     "binary":                    [("string", "value", True)],  # noqa
-    "complex":                   [("string", "value", True)],  # noqa
-    "float_exponant":            [("string", "value", True)],  # noqa
     "left_parenthesis":          [("string", "value", True)],  # noqa
     "right_parenthesis":         [("string", "value", True)],  # noqa
     "float_exponant_complex":    [("string", "value", True)],  # noqa
