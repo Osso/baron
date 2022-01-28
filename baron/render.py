@@ -128,7 +128,6 @@ nodes_rendering_order = {
     "binary":                    [("string", "value", True)],  # noqa
     "left_parenthesis":          [("string", "value", True)],  # noqa
     "right_parenthesis":         [("string", "value", True)],  # noqa
-    "float_exponant_complex":    [("string", "value", True)],  # noqa
 
     "break":                     [("string", "type", True)],  # noqa
     "continue":                  [("string", "type", True)],  # noqa

@@ -1,5 +1,3 @@
-import pytest
-
 from baron import (dumps,
                    parse)
 

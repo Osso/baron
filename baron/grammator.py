@@ -37,6 +37,26 @@ def generate_parse(print_function):
                 "value": ";"
             }]
 
+    # @pg.production("statements : DEDENT COMMENT INDENT")
+    # def statement_comment(pack):
+    #     (dedent, statement, indent) = pack
+    #     return statement
+
+    # @pg.production("statements : statements COMMENT ENDL")
+    # def statement_comment(pack):
+    #     (statements, comment, endl) = pack
+    #     import pdb; pdb.set_trace()
+    #     return statements + [{
+    #         "type": "comment",
+    #         "value": comment.value,
+    #         "formatting": comment.hidden_tokens_before,
+    #     }, {
+    #         "type": "endl",
+    #         "value": endl.value,
+    #         "formatting": endl.hidden_tokens_before,
+    #         "indent": endl.hidden_tokens_after[0]["value"] if endl.hidden_tokens_after else "",
+    #     }]
+
     @pg.production("statements : statement")
     def statement(pack):
         (statement,) = pack

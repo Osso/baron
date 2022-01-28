@@ -1,9 +1,9 @@
-#!/usr/bin/python
-# -*- coding:Utf-8 -*-
-# flake8: noqa
 import pytest
 
+from baron import (dumps,
+                   parse)
 from baron.indentation_marker import mark_indentation
+
 from .test_utils import zip_longest
 
 
@@ -18,7 +18,7 @@ def test_empty():
     check([], [])
 
 
-def test_dummy():
+def test_name():
     "a"
     check([
         ('NAME', 'a'),
@@ -27,7 +27,7 @@ def test_dummy():
     ])
 
 
-def test_dumy_if():
+def test_if():
     """
     if a:
         pass
@@ -49,7 +49,7 @@ def test_dumy_if():
     ])
 
 
-def test_dumy_def_space():
+def test_def_space():
     """
     def foo():
         pass     """
@@ -77,7 +77,7 @@ def test_dumy_def_space():
     ])
 
 
-def test_dumy_if_if():
+def test_if_if():
     """
     if a:
         if b:
@@ -112,7 +112,7 @@ def test_dumy_if_if():
     ])
 
 
-def test_dummy_if_followed():
+def test_if_followed():
     """
     if a:
         pass
@@ -139,7 +139,7 @@ def test_dummy_if_followed():
     ])
 
 
-def test_dummy_if_followed_blank_line():
+def test_if_followed_blank_line():
     """
     if a:
 
@@ -158,15 +158,15 @@ def test_dummy_if_followed_blank_line():
         ('NAME', 'a'),
         ('COLON', ':'),
         ('ENDL', '\n'),
-        ('INDENT', ''),
         ('ENDL', '\n', [], [('SPACE', '    ')]),
+        ('INDENT', ''),
         ('PASS', 'pass'),
         ('ENDL', '\n'),
         ('DEDENT', ''),
     ])
 
 
-def test_dumy_if_dendent_quite_a_lot():
+def test_if_dendent_quite_a_lot():
     """
     if a:
         if b:
@@ -210,15 +210,15 @@ def test_dumy_if_dendent_quite_a_lot():
         ('INDENT', ''),
         ('PASS', 'pass'),
         ('ENDL', '\n'),
+        ('DEDENT', ''),
+        ('DEDENT', ''),
+        ('DEDENT', ''),
         ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('DEDENT', ''),
-        ('DEDENT', ''),
         ('NAME', 'pouet'),
     ])
 
 
-def test_dumy_if_dendent_a_lot():
+def test_if_dendent_a_lot():
     """
     if a:
         if b:
@@ -294,10 +294,10 @@ def test_dumy_if_dendent_a_lot():
         ('INDENT', ''),
         ('PASS', 'pass'),
         ('ENDL', '\n'),
+        ('DEDENT', ''),
+        ('DEDENT', ''),
+        ('DEDENT', ''),
         ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('DEDENT', ''),
-        ('DEDENT', ''),
         ('NAME', 'pouet'),
     ])
 
@@ -333,8 +333,8 @@ def test_trailing_spaces():
         ('NAME', 'b'),
         ('COLON', ':'),
         ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
         ('INDENT', ''),
+        ('ENDL', '\n', [], [('SPACE', '    ')]),
         ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
         ('PASS', 'pass'),
         ('ENDL', '\n'),
@@ -343,11 +343,11 @@ def test_trailing_spaces():
     ])
 
 
-def test_tab_and_spaces_because_some_people_are_horrible():
+def test_dedent():
     """
     if a:
             pass
-    	pass
+        pass
     """
     check([
         ('IF', 'if', [], [('SPACE', ' ')]),
@@ -355,7 +355,7 @@ def test_tab_and_spaces_because_some_people_are_horrible():
         ('COLON', ':'),
         ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
         ('PASS', 'pass'),
-        ('ENDL', '\n', [], [('SPACE', '	')]),
+        ('ENDL', '\n', [], [('SPACE', '    ')]),
         ('PASS', 'pass'),
     ], [
         ('IF', 'if', [], [('SPACE', ' ')]),
@@ -364,14 +364,20 @@ def test_tab_and_spaces_because_some_people_are_horrible():
         ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
         ('INDENT', ''),
         ('PASS', 'pass'),
-        ('ENDL', '\n', [], [('SPACE', '	')]),
-        ('PASS', 'pass'),
+        ('ENDL', '\n', [], [('SPACE', '    ')]),
         ('DEDENT', ''),
+        ('PASS', 'pass'),
     ])
 
 
-@pytest.mark.skip
 def test_comment_in_middle_of_ifelseblock():
+    """
+    if a:
+        pass
+    # comment
+    else:
+        pass
+    """
     check([
         ('ENDL', '\n'),
         ('IF', 'if', [], [('SPACE', ' ')]),
@@ -407,3 +413,50 @@ def test_comment_in_middle_of_ifelseblock():
         ('ENDL', '\n'),
         ('DEDENT', ''),
     ])
+
+
+def test_comment_end_of_ifelseblock():
+    """
+    if a:
+        pass
+    # comment
+    else:
+        pass
+    """
+    check([
+        ('ENDL', '\n'),
+        ('IF', 'if', [], [('SPACE', ' ')]),
+        ('NAME', 'a'),
+        ('COLON', ':'),
+        ('ENDL', '\n', [], [('SPACE', '    ')]),
+        ('PASS', 'pass'),
+        ('ENDL', '\n'),
+        ('COMMENT', '# comment'),
+        ('ENDL', '\n'),
+    ], [
+        ('ENDL', '\n'),
+        ('IF', 'if', [], [('SPACE', ' ')]),
+        ('NAME', 'a'),
+        ('COLON', ':'),
+        ('ENDL', '\n', [], [('SPACE', '    ')]),
+        ('INDENT', ''),
+        ('PASS', 'pass'),
+        ('ENDL', '\n'),
+        ('DEDENT', ''),
+        ('COMMENT', '# comment'),
+        ('ENDL', '\n'),
+    ])
+
+
+def test_comment_in_middle_of_def():
+    code = "def a():\n    pass\n# pouf\n    pass\n"
+    parsed = parse(code)
+    assert dumps(parsed) == code
+    assert len(parsed) == 1
+
+
+def test_empty_line_in_middle_of_def():
+    code = "def a():\n    pass\n\n    pass\n"
+    parsed = parse(code)
+    assert dumps(parsed) == code
+    assert len(parsed) == 1
