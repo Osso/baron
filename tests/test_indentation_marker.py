@@ -460,3 +460,17 @@ def test_empty_line_in_middle_of_def():
     parsed = parse(code)
     assert dumps(parsed) == code
     assert len(parsed) == 1
+
+
+def test_empty_line_after_def():
+    code = "def a():\n    pass\n    pass\n\n"
+    parsed = parse(code)
+    assert dumps(parsed) == code
+    assert len(parsed) == 2
+
+
+def test_comment_after_def():
+    code = "def a():\n    pass\n    pass\n# pouf"
+    parsed = parse(code)
+    assert dumps(parsed) == code
+    assert len(parsed) == 2
