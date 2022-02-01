@@ -21,9 +21,7 @@ test this idea.
 
 
 def mark_indentation(sequence):
-    r = list(mark_indentation_generator(sequence))
-    # import pdb; pdb.set_trace()
-    return r
+    return list(mark_indentation_generator(sequence))
 
 
 def transform_tabs_to_spaces(string):
@@ -63,30 +61,44 @@ def mark_indentation_generator(sequence):
         if current[0] == "ENDL":
             new_indent = get_space(current)
 
+            current_indentation = indentations[-1] if indentations else ""
+            comments_and_blank_lines = list(pop_comments_and_blank_lines(iterator, current_indentation))
+            if comments_and_blank_lines:
+                new_indent = get_space(comments_and_blank_lines[-1])
+
             if new_indent and (not indentations or len(new_indent) > len(indentations[-1])):
                 indentations.append(new_indent)
                 yield ('INDENT', '')
+                yield from comments_and_blank_lines
 
-            elif indentations and new_indent < indentations[-1]:
-                comments_and_blank_lines = list(pop_comments_and_blank_lines(iterator, indentations[-1]))
-                if comments_and_blank_lines:
-                    new_indent = get_space(comments_and_blank_lines[-1])
-                if len(new_indent) < len(indentations[-1]):
-                    next_is_clause = iterator.show_next()[0] in ("ELSE", "ELIF",
-                                                                 "EXCEPT", "FINALLY")
-                    if next_is_clause:
-                        yield from comments_and_blank_lines
-
-                    while indentations and len(new_indent) < len(indentations[-1]):
-                        indentations.pop()
-                        # include comments in body
-                        yield ('DEDENT', '')
-                        # comments out of body
-
-                    if not next_is_clause:
-                        yield from comments_and_blank_lines
-                else:
+            elif indentations and len(new_indent) < len(indentations[-1]):
+                next_is_clause = iterator.show_next()[0] in ("ELSE", "ELIF",
+                                                             "EXCEPT", "FINALLY")
+                if next_is_clause:
                     yield from comments_and_blank_lines
+                else:
+                    el = current
+                    while (comments_and_blank_lines and
+                           len(get_space(el)) == len(indentations[-1]) and
+                           comments_and_blank_lines[0][0] == "COMMENT"):
+                        yield comments_and_blank_lines.pop(0)
+                        el = comments_and_blank_lines.pop(0)
+                        yield el
+                        # while comments_and_blank_lines and comments_and_blank_lines[0][0] == "COMMENT":
+                        #     el = comments_and_blank_lines.pop(0)
+                        #     yield el
+
+                while indentations and len(new_indent) < len(indentations[-1]):
+                    indentations.pop()
+                    # include comments in body
+                    yield ('DEDENT', '')
+                    # comments out of body
+
+                if not next_is_clause:
+                    yield from comments_and_blank_lines
+
+            else:
+                yield from comments_and_blank_lines
 
 
 def pop_comments_and_blank_lines(iterator, current_indentation):
@@ -95,7 +107,5 @@ def pop_comments_and_blank_lines(iterator, current_indentation):
 
     for i in iterator:
         yield i
-        if i[0] == "ENDL" and get_space(i) == current_indentation:
-            break
         if iterator.show_next()[0] not in ("ENDL", "COMMENT"):
             break

@@ -158,8 +158,8 @@ def test_if_followed_blank_line():
         ('NAME', 'a'),
         ('COLON', ':'),
         ('ENDL', '\n'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
         ('INDENT', ''),
+        ('ENDL', '\n', [], [('SPACE', '    ')]),
         ('PASS', 'pass'),
         ('ENDL', '\n'),
         ('DEDENT', ''),
@@ -506,6 +506,13 @@ def test_def_inside_def():
 
 def test_def_inside_def_2():
     code = "def a():\n\n    def b(): pass\n"
+    parsed = parse(code)
+    assert dumps(parsed) == code
+    assert len(parsed) == 1
+
+
+def test_def_inside_def_inside_class():
+    code = "class A:\n    def a():\n\n        def b(): pass\n"
     parsed = parse(code)
     assert dumps(parsed) == code
     assert len(parsed) == 1
