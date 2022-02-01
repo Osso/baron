@@ -495,3 +495,17 @@ def test_empty_line_after_class():
     parsed = parse(code)
     assert dumps(parsed) == code
     assert len(parsed) == 2
+
+
+def test_def_inside_def():
+    code = "def a():\n    def b(): pass\n"
+    parsed = parse(code)
+    assert dumps(parsed) == code
+    assert len(parsed) == 1
+
+
+def test_def_inside_def_2():
+    code = "def a():\n\n    def b(): pass\n"
+    parsed = parse(code)
+    assert dumps(parsed) == code
+    assert len(parsed) == 1
