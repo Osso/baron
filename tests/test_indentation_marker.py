@@ -470,10 +470,17 @@ def test_empty_line_after_def():
 
 
 def test_comment_after_def():
-    code = "def a():\n    pass\n    pass\n# pouf"
+    code = "def a():\n    pass\n    pass\n    # pouf\n"
     parsed = parse(code)
     assert dumps(parsed) == code
-    assert len(parsed) == 2
+    assert len(parsed) == 1
+
+
+def test_comment_after_def_2():
+    code = "def a():\n    pass\n    pass\n# pouf\n"
+    parsed = parse(code)
+    assert dumps(parsed) == code
+    assert len(parsed) == 3
 
 
 def test_empty_line_after_class():

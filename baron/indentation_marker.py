@@ -62,15 +62,13 @@ def mark_indentation_generator(sequence):
 
         if current[0] == "ENDL":
             new_indent = get_space(current)
-            # import pdb; pdb.set_trace()
 
             if new_indent and (not indentations or len(new_indent) > len(indentations[-1])):
                 indentations.append(new_indent)
                 yield ('INDENT', '')
-                # import pdb; pdb.set_trace()
 
-            elif indentations:
-                comments_and_blank_lines = list(pop_comments_and_blank_lines(iterator))
+            elif indentations and new_indent < indentations[-1]:
+                comments_and_blank_lines = list(pop_comments_and_blank_lines(iterator, indentations[-1]))
                 if comments_and_blank_lines:
                     new_indent = get_space(comments_and_blank_lines[-1])
                 if len(new_indent) < len(indentations[-1]):
@@ -91,12 +89,13 @@ def mark_indentation_generator(sequence):
                     yield from comments_and_blank_lines
 
 
-
-def pop_comments_and_blank_lines(iterator):
+def pop_comments_and_blank_lines(iterator, current_indentation):
     if iterator.show_next()[0] not in ("ENDL", "COMMENT"):
         return
 
     for i in iterator:
         yield i
+        if i[0] == "ENDL" and get_space(i) == current_indentation:
+            break
         if iterator.show_next()[0] not in ("ENDL", "COMMENT"):
             break
