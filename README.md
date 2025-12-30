@@ -1,5 +1,11 @@
 # Baron
 
+[![CI](https://github.com/PyCQA/baron/actions/workflows/ci.yml/badge.svg)](https://github.com/PyCQA/baron/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/baron.svg)](https://pypi.org/project/baron/)
+[![Python](https://img.shields.io/pypi/pyversions/baron.svg)](https://pypi.org/project/baron/)
+[![License](https://img.shields.io/pypi/l/baron.svg)](https://github.com/PyCQA/baron/blob/master/LICENSE)
+[![Docs](https://readthedocs.org/projects/baron/badge/?version=latest)](https://baron.readthedocs.io/en/latest/)
+
 Baron is a Full Syntax Tree (FST) library for Python. By opposition to an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) which
 drops some syntax information in the process of its creation (like empty lines,
 comments, formatting), a FST keeps everything and guarantees the operation
