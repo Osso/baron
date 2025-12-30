@@ -11,11 +11,16 @@ class BaronToken(BaseBox):
                        position of the first character in the source from which
                        this token was generated.
     """
+
     def __init__(self, name, value, hidden_tokens_before=None, hidden_tokens_after=None):
         self.name = name
         self.value = value
-        self.hidden_tokens_before = list(map(self._translate_tokens_to_ast_node, hidden_tokens_before if hidden_tokens_before else []))
-        self.hidden_tokens_after = list(map(self._translate_tokens_to_ast_node, hidden_tokens_after if hidden_tokens_after else []))
+        self.hidden_tokens_before = list(
+            map(self._translate_tokens_to_ast_node, hidden_tokens_before if hidden_tokens_before else [])
+        )
+        self.hidden_tokens_after = list(
+            map(self._translate_tokens_to_ast_node, hidden_tokens_after if hidden_tokens_after else [])
+        )
 
     def _translate_tokens_to_ast_node(self, token):
         if token[0] == "ENDL":
@@ -43,7 +48,7 @@ class BaronToken(BaseBox):
         }
 
     def __repr__(self):
-        return "Token(%r, %r, %s, %s)" % (self.name, self.value, self.hidden_tokens_before, self.hidden_tokens_after)
+        return f"Token({self.name!r}, {self.value!r}, {self.hidden_tokens_before}, {self.hidden_tokens_after})"
 
     def __eq__(self, other):
         if not isinstance(other, BaronToken):

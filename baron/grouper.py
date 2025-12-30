@@ -1,6 +1,5 @@
-# encoding: utf-8
-
 import re
+
 from .utils import FlexibleIterator
 
 to_group = (
@@ -30,9 +29,10 @@ to_group = (
     (".", "."),
     ("..", "."),
     ("-", ">"),
+    (":", "="),  # walrus operator (PEP 572)
 )
 
-to_group_keys, _ = list(zip(*to_group))
+to_group_keys, _ = list(zip(*to_group, strict=False))
 
 
 def group(sequence):
@@ -55,51 +55,58 @@ def group_generator(sequence):
             current += next(iterator)
         if current in to_group_keys and matching_found(to_group, current, iterator.show_next()):
             current += next(iterator)
-        if current in list('uUfFrRbB') and str(iterator.show_next()).startswith(('"', "'")):
+        if current in list("uUfFrRbB") and str(iterator.show_next()).startswith(('"', "'")):
             current += next(iterator)
         if str(current).lower() in ["ur", "br", "fr", "rf"] and str(iterator.show_next()).startswith(('"', "'")):
             current += next(iterator)
-        if any([re.match(x, current) for x in (r'^\d+[eE]$', r'^\d+\.\d*[eE]$', r'^\.\d+[eE]$')]):
+        if any(re.match(x, current) for x in (r"^\d+[eE]$", r"^\d+\.\d*[eE]$", r"^\.\d+[eE]$")):
             current += next(iterator)
             current += next(iterator)
 
             # It's required in a case where I have something like that:
             # ['123.123e', '[+-]', '123']
-            assert re.match(r'^\d+[eE][-+]?\d+[jJ]?$', current) or re.match(r'^\d*.\d*[eE][-+]?\d+[jJ]?$', current)
+            assert re.match(r"^\d+[eE][-+]?\d+[jJ]?$", current) or re.match(r"^\d*.\d*[eE][-+]?\d+[jJ]?$", current)
 
-        if current == "\\" and iterator.show_next() in ('\n', '\r\n'):
+        if current == "\\" and iterator.show_next() in ("\n", "\r\n"):
             current += next(iterator)
-            if re.match(r'^\s+$', str(iterator.show_next())):
+            if re.match(r"^\s+$", str(iterator.show_next())):
                 current += next(iterator)
 
         if current == "\\" and iterator.show_next() == "\r" and iterator.show_next(2) == "\n":
             current += next(iterator)
             current += next(iterator)
-            if re.match(r'^\s+$', str(iterator.show_next())):
+            if re.match(r"^\s+$", str(iterator.show_next())):
                 current += next(iterator)
 
-        if re.match(r'^\s+$', current) and iterator.show_next() == "\\":
+        if re.match(r"^\s+$", current) and iterator.show_next() == "\\":
             current += next(iterator)
             current += next(iterator)
             if iterator.show_next() == "\n":
                 current += next(iterator)
-            if re.match(r'^\s+$', str(iterator.show_next())):
+            if re.match(r"^\s+$", str(iterator.show_next())):
                 current += next(iterator)
 
-        if (re.match(r'^[_\d]+$', current) and match_on_next(r'^\.$', iterator)) or\
-           (current == "." and match_on_next(r'^[_\d]+([jJ]|[eE]\d*)?$', iterator)):
+        if (re.match(r"^[_\d]+$", current) and match_on_next(r"^\.$", iterator)) or (
+            current == "." and match_on_next(r"^[_\d]+([jJ]|[eE]\d*)?$", iterator)
+        ):
             current += next(iterator)
 
-            if match_on_next(r'^[_\d]*[jJ]?$', iterator) and match_on_next(r'^[_\d]*[jJ]?$', iterator).group():
+            if match_on_next(r"^[_\d]*[jJ]?$", iterator) and match_on_next(r"^[_\d]*[jJ]?$", iterator).group():
                 current += next(iterator)
 
-        if re.match(r'^\d+\.$', current) and match_on_next(r'^\d*[eE]\d*$', iterator):
+        if re.match(r"^\d+\.$", current) and match_on_next(r"^\d*[eE][-+]?\d*[jJ]?$", iterator):
             current += next(iterator)
 
-        if re.match(r'^\d+\.?[eE]$', current) and match_on_next(r'^\d+$', iterator):
+        if re.match(r"^\d+\.?[eE]$", current) and match_on_next(r"^\d+$", iterator):
             current += next(iterator)
 
-        if re.match(r'^\d*\.?\d*[eE]$', current) and not re.match('[eE]', current) and match_on_next(r'^[-+]$', iterator) and iterator.show_next(2) and re.match(r'^\d+$', iterator.show_next(2)):
+        if (
+            re.match(r"^\d*\.?\d*[eE]$", current)
+            and not re.match("[eE]", current)
+            and match_on_next(r"^[-+]$", iterator)
+            and iterator.show_next(2)
+            and re.match(r"^\d+[jJ]?$", iterator.show_next(2))
+        ):
             current += next(iterator)
             current += next(iterator)
 

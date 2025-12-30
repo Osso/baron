@@ -1,15 +1,11 @@
-import pytest
-
-from baron import (dumps,
-                   parse)
+from baron import dumps, parse
 from baron.indentation_marker import mark_indentation
 
 from .test_utils import zip_longest
 
 
 def check(input_, output):
-    for i, j in zip_longest(mark_indentation(input_ + [('ENDMARKER', ''), None]),
-                            output + [('ENDMARKER', ''), None]):
+    for i, j in zip_longest(mark_indentation(input_ + [("ENDMARKER", ""), None]), output + [("ENDMARKER", ""), None]):
         assert i == j
 
 
@@ -20,11 +16,14 @@ def test_empty():
 
 def test_name():
     "a"
-    check([
-        ('NAME', 'a'),
-    ], [
-        ('NAME', 'a'),
-    ])
+    check(
+        [
+            ("NAME", "a"),
+        ],
+        [
+            ("NAME", "a"),
+        ],
+    )
 
 
 def test_if():
@@ -32,49 +31,55 @@ def test_if():
     if a:
         pass
     """
-    check([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('PASS', 'pass'),
-    ], [
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('DEDENT', ''),
-    ])
+    check(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("PASS", "pass"),
+        ],
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("DEDENT", ""),
+        ],
+    )
 
 
 def test_def_space():
     """
     def foo():
-        pass     """
+        pass"""
     # https://github.com/PyCQA/baron/issues/101
-    check([
-        ('DEF', 'def', [], [('SPACE', ' ')]),
-        ('NAME', 'foo'),
-        ('LEFT_PARENTHESIS', '('),
-        ('RIGHT_PARENTHESIS', ')'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n', [('SPACE', '   ')]),
-    ], [
-        ('DEF', 'def', [], [('SPACE', ' ')]),
-        ('NAME', 'foo'),
-        ('LEFT_PARENTHESIS', '('),
-        ('RIGHT_PARENTHESIS', ')'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n', [('SPACE', '   ')]),
-        ('DEDENT', ''),
-    ])
+    check(
+        [
+            ("DEF", "def", [], [("SPACE", " ")]),
+            ("NAME", "foo"),
+            ("LEFT_PARENTHESIS", "("),
+            ("RIGHT_PARENTHESIS", ")"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("PASS", "pass"),
+            ("ENDL", "\n", [("SPACE", "   ")]),
+        ],
+        [
+            ("DEF", "def", [], [("SPACE", " ")]),
+            ("NAME", "foo"),
+            ("LEFT_PARENTHESIS", "("),
+            ("RIGHT_PARENTHESIS", ")"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n", [("SPACE", "   ")]),
+            ("DEDENT", ""),
+        ],
+    )
 
 
 def test_if_if():
@@ -83,33 +88,36 @@ def test_if_if():
         if b:
             pass
     """
-    check([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'b'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '        ')]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-    ], [
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'b'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '        ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('DEDENT', ''),
-    ])
+    check(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "b"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "        ")]),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+        ],
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "b"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "        ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("DEDENT", ""),
+        ],
+    )
 
 
 def test_if_followed():
@@ -118,25 +126,28 @@ def test_if_followed():
         pass
     pouet
     """
-    check([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('NAME', 'pouet'),
-    ], [
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('NAME', 'pouet'),
-    ])
+    check(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("NAME", "pouet"),
+        ],
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("NAME", "pouet"),
+        ],
+    )
 
 
 def test_if_followed_blank_line():
@@ -145,25 +156,28 @@ def test_if_followed_blank_line():
 
         pass
     """
-    check([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-    ], [
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n'),
-        ('INDENT', ''),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ])
+    check(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+        ],
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n"),
+            ("INDENT", ""),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+    )
 
 
 def test_if_dendent_quite_a_lot():
@@ -175,47 +189,50 @@ def test_if_dendent_quite_a_lot():
 
     pouet
     """
-    check([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 1)]),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'b'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'c'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 3)]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('ENDL', '\n'),
-        ('NAME', 'pouet'),
-    ], [
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 1)]),
-        ('INDENT', ''),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'b'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('INDENT', ''),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'c'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 3)]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('DEDENT', ''),
-        ('DEDENT', ''),
-        ('ENDL', '\n'),
-        ('NAME', 'pouet'),
-    ])
+    check(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 1)]),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "b"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "c"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 3)]),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("ENDL", "\n"),
+            ("NAME", "pouet"),
+        ],
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 1)]),
+            ("INDENT", ""),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "b"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("INDENT", ""),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "c"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 3)]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("DEDENT", ""),
+            ("DEDENT", ""),
+            ("ENDL", "\n"),
+            ("NAME", "pouet"),
+        ],
+    )
 
 
 def test_if_dendent_a_lot():
@@ -231,116 +248,122 @@ def test_if_dendent_a_lot():
 
     pouet
     """
-    check([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 1)]),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'b'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'c'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 3)]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 1)]),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'd'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'e'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 3)]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('ENDL', '\n'),
-        ('NAME', 'pouet'),
-    ], [
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 1)]),
-        ('INDENT', ''),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'b'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('INDENT', ''),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'c'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 3)]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 1)]),
-        ('DEDENT', ''),
-        ('DEDENT', ''),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'd'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'e'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 3)]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('DEDENT', ''),
-        ('DEDENT', ''),
-        ('ENDL', '\n'),
-        ('NAME', 'pouet'),
-    ])
+    check(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 1)]),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "b"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "c"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 3)]),
+            ("PASS", "pass"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 1)]),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "d"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("PASS", "pass"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "e"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 3)]),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("ENDL", "\n"),
+            ("NAME", "pouet"),
+        ],
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 1)]),
+            ("INDENT", ""),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "b"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("INDENT", ""),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "c"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 3)]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 1)]),
+            ("DEDENT", ""),
+            ("DEDENT", ""),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "d"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "e"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 3)]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("DEDENT", ""),
+            ("DEDENT", ""),
+            ("ENDL", "\n"),
+            ("NAME", "pouet"),
+        ],
+    )
 
 
 def test_trailing_spaces():
     """
     if a:
         if b:
-            
-        
+
+
             pass
     """
-    check([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'b'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-    ], [
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'b'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('INDENT', ''),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('DEDENT', ''),
-    ])
+    check(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "b"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+        ],
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "b"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("INDENT", ""),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("DEDENT", ""),
+        ],
+    )
 
 
 def test_dedent():
@@ -349,25 +372,28 @@ def test_dedent():
             pass
         pass
     """
-    check([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('PASS', 'pass'),
-    ], [
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ' * 2)]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('DEDENT', ''),
-        ('PASS', 'pass'),
-    ])
+    check(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("PASS", "pass"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("PASS", "pass"),
+        ],
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    " * 2)]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("DEDENT", ""),
+            ("PASS", "pass"),
+        ],
+    )
 
 
 def test_comment_in_middle_of_ifelseblock():
@@ -378,41 +404,44 @@ def test_comment_in_middle_of_ifelseblock():
     else:
         pass
     """
-    check([
-        ('ENDL', '\n'),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('COMMENT', '# comment'),
-        ('ENDL', '\n'),
-        ('ELSE', 'else'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-    ], [
-        ('ENDL', '\n'),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('COMMENT', '# comment'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('ELSE', 'else'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ])
+    check(
+        [
+            ("ENDL", "\n"),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("COMMENT", "# comment"),
+            ("ENDL", "\n"),
+            ("ELSE", "else"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+        ],
+        [
+            ("ENDL", "\n"),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("COMMENT", "# comment"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("ELSE", "else"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+    )
 
 
 def test_comment_end_of_ifelseblock():
@@ -423,29 +452,32 @@ def test_comment_end_of_ifelseblock():
     else:
         pass
     """
-    check([
-        ('ENDL', '\n'),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('COMMENT', '# comment'),
-        ('ENDL', '\n'),
-    ], [
-        ('ENDL', '\n'),
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('COMMENT', '# comment'),
-        ('ENDL', '\n'),
-    ])
+    check(
+        [
+            ("ENDL", "\n"),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("COMMENT", "# comment"),
+            ("ENDL", "\n"),
+        ],
+        [
+            ("ENDL", "\n"),
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("COMMENT", "# comment"),
+            ("ENDL", "\n"),
+        ],
+    )
 
 
 def test_comment_in_middle_of_def():

@@ -1,17 +1,17 @@
 import errno
-import os
 import json
+import os
 import stat
 import tempfile
 import warnings
 
-from .token import BaronToken
-
 from rply import ParserGenerator
-from rply.parser import LRParser
-from rply.parsergenerator import LRTable
 from rply.errors import ParserGeneratorWarning
 from rply.grammar import Grammar
+from rply.parser import LRParser
+from rply.parsergenerator import LRTable
+
+from .token import BaronToken
 from .utils import BaronError
 
 
@@ -33,17 +33,9 @@ class BaronParserGenerator(ParserGenerator):
         g.set_start()
 
         for unused_term in g.unused_terminals():
-            warnings.warn(
-                "Token %r is unused" % unused_term,
-                ParserGeneratorWarning,
-                stacklevel=2
-            )
+            warnings.warn(f"Token {unused_term!r} is unused", ParserGeneratorWarning, stacklevel=2)
         for unused_prod in g.unused_productions():
-            warnings.warn(
-                "Production %r is not reachable" % unused_prod,
-                ParserGeneratorWarning,
-                stacklevel=2
-            )
+            warnings.warn(f"Production {unused_prod!r} is not reachable", ParserGeneratorWarning, stacklevel=2)
 
         g.build_lritems()
         g.compute_first()
@@ -53,12 +45,12 @@ class BaronParserGenerator(ParserGenerator):
         if os.name == "nt":
             cache_file = os.path.join(
                 tempfile.gettempdir(),
-                "rply-%s-%s-%s.json" % (self.VERSION, self.cache_id, self.compute_grammar_hash(g))
+                f"rply-{self.VERSION}-{self.cache_id}-{self.compute_grammar_hash(g)}.json",
             )
         else:
             cache_file = os.path.join(
                 tempfile.gettempdir(),
-                "rply-%s-%s-%s-%s.json" % (self.VERSION, os.getuid(), self.cache_id, self.compute_grammar_hash(g))
+                f"rply-{self.VERSION}-{os.getuid()}-{self.cache_id}-{self.compute_grammar_hash(g)}.json",
             )
         table = None
         if os.path.exists(cache_file):
@@ -72,13 +64,10 @@ class BaronParserGenerator(ParserGenerator):
                 if data is not None:
                     stat_result = os.fstat(f.fileno())
                     if (
-                        os.name == "nt" or (
-                            stat_result.st_uid == os.getuid()
-                            and stat.S_IMODE(stat_result.st_mode) == 0o0600
-                        )
-                    ):
-                        if self.data_is_valid(g, data):
-                            table = LRTable.from_cache(g, data)
+                        os.name == "nt"
+                        or (stat_result.st_uid == os.getuid() and stat.S_IMODE(stat_result.st_mode) == 0o0600)
+                    ) and self.data_is_valid(g, data):
+                        table = LRTable.from_cache(g, data)
 
         if table is None:
             table = LRTable.from_grammar(g)
@@ -92,17 +81,17 @@ class BaronParserGenerator(ParserGenerator):
                     json.dump(self.serialize_table(table), f)
         # meh :(
         # if table.sr_conflicts:
-            # warnings.warn(
-                # "%d shift/reduce conflict%s" % (len(table.sr_conflicts), "s" if len(table.sr_conflicts) > 1 else ""),
-                # ParserGeneratorWarning,
-                # stacklevel=2,
-            # )
+        # warnings.warn(
+        # "%d shift/reduce conflict%s" % (len(table.sr_conflicts), "s" if len(table.sr_conflicts) > 1 else ""),
+        # ParserGeneratorWarning,
+        # stacklevel=2,
+        # )
         # if table.rr_conflicts:
-            # warnings.warn(
-                # "%d reduce/reduce conflict%s" % (len(table.rr_conflicts), "s" if len(table.rr_conflicts) > 1 else ""),
-                # ParserGeneratorWarning,
-                # stacklevel=2,
-            # )
+        # warnings.warn(
+        # "%d reduce/reduce conflict%s" % (len(table.rr_conflicts), "s" if len(table.rr_conflicts) > 1 else ""),
+        # ParserGeneratorWarning,
+        # stacklevel=2,
+        # )
         return BaronLRParser(table, self.error_handler)
 
 
@@ -155,11 +144,14 @@ class BaronLRParser(LRParser):
                     return n
             else:
                 debug_output = parsed_file_content.split("\n")
-                debug_output = list(zip(range(1, len(debug_output) + 1), debug_output))
+                debug_output = list(zip(range(1, len(debug_output) + 1), debug_output, strict=False))
                 debug_output = debug_output[-8:]
-                debug_output = "\n".join(["%4s %s" % (x[0], x[1]) for x in debug_output])
+                debug_output = "\n".join([f"{x[0]:4} {x[1]}" for x in debug_output])
                 debug_output += "<---- here"
-                debug_output = "Error, got an unexpected token %s here:\n\n" % ltype + debug_output
-                debug_output += "\n\nThe token %s should be one of those: %s" % (ltype, ", ".join(sorted(self.lr_table.lr_action[current_state].keys())))
+                debug_output = f"Error, got an unexpected token {ltype} here:\n\n" + debug_output
+                debug_output += "\n\nThe token {} should be one of those: {}".format(
+                    ltype,
+                    ", ".join(sorted(self.lr_table.lr_action[current_state].keys())),
+                )
                 debug_output += "\n\nBaron has failed to parse this input. If this is valid python code (and by that I mean that the python binary successfully parse this code without any syntax error) (also consider that python does not yet parse python 3 code integrally) it would be kind if you can extract a snippet of your code that make Baron fails and open a bug here: https://github.com/PyCQA/baron/issues\n\nSorry for the inconvenience."
                 raise ParsingError(debug_output)

@@ -1,6 +1,5 @@
 from .utils import FlexibleIterator
 
-
 """
 Objective: add an INDENT token and a DEDENT token arround every block.
 
@@ -54,7 +53,7 @@ def mark_indentation_generator(sequence):
         # corresponding dedent token for them
         if current[0] == "ENDMARKER":
             for _ in indentations:
-                yield ('DEDENT', '')
+                yield ("DEDENT", "")
 
         yield current
 
@@ -68,19 +67,20 @@ def mark_indentation_generator(sequence):
 
             if new_indent and (not indentations or len(new_indent) > len(indentations[-1])):
                 indentations.append(new_indent)
-                yield ('INDENT', '')
+                yield ("INDENT", "")
                 yield from comments_and_blank_lines
 
             elif indentations and len(new_indent) < len(indentations[-1]):
-                next_is_clause = iterator.show_next()[0] in ("ELSE", "ELIF",
-                                                             "EXCEPT", "FINALLY")
+                next_is_clause = iterator.show_next()[0] in ("ELSE", "ELIF", "EXCEPT", "FINALLY")
                 if next_is_clause:
                     yield from comments_and_blank_lines
                 else:
                     el = current
-                    while (comments_and_blank_lines and
-                           len(get_space(el)) == len(indentations[-1]) and
-                           comments_and_blank_lines[0][0] == "COMMENT"):
+                    while (
+                        comments_and_blank_lines
+                        and len(get_space(el)) == len(indentations[-1])
+                        and comments_and_blank_lines[0][0] == "COMMENT"
+                    ):
                         yield comments_and_blank_lines.pop(0)
                         el = comments_and_blank_lines.pop(0)
                         yield el
@@ -91,7 +91,7 @@ def mark_indentation_generator(sequence):
                 while indentations and len(new_indent) < len(indentations[-1]):
                     indentations.pop()
                     # include comments in body
-                    yield ('DEDENT', '')
+                    yield ("DEDENT", "")
                     # comments out of body
 
                 if not next_is_clause:

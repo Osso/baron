@@ -343,7 +343,6 @@ def generate_parse(print_function):
         (decorator,) = pack
         return decorator
 
-    # TODO tests
     @pg.production("decorator : endl")
     def decorator_endl(pack):
         # thanks iPython devs, you appear to be the only one in the world that
@@ -690,6 +689,15 @@ def generate_parse(print_function):
             "formatting": star.hidden_tokens_after,
         }]
 
+    @pg.production("typed_parameter : SLASH")
+    @pg.production("parameter : SLASH")
+    def parameter_slash_only(pack):
+        (slash,) = pack
+        return [{
+            "type": "positional_only_marker",
+            "formatting": slash.hidden_tokens_after,
+        }]
+
     @pg.production("typed_parameter : DOUBLE_STAR NAME")
     @pg.production("parameter : DOUBLE_STAR NAME")
     def parameter_star_star(pack):
@@ -767,7 +775,6 @@ def generate_parse(print_function):
         (test,) = pack
         return [test]
 
-    # TODO test all the things (except INT)
     @pg.production("atom : INT")
     @pg.production("atom : LONG")
     @pg.production("atom : OCTA")

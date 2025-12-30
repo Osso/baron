@@ -25,8 +25,8 @@ def include_operators(pg):
             "type": "standalone_annotation",
             "target": target,
             "annotation": annotation,  # not called "value" in case someone
-                                       # wants to work on both assignment and
-                                       # standalone annotations
+            # wants to work on both assignment and
+            # standalone annotations
             "first_formatting": colon.hidden_tokens_before,
             "second_formatting": colon.hidden_tokens_after,
         }
@@ -123,6 +123,17 @@ def include_operators(pg):
             "fourth_formatting": else_.hidden_tokens_after,
         }
 
+    @pg.production("test : NAME COLON_EQUAL test")
+    def named_expr(pack):
+        (name, walrus, value) = pack
+        return {
+            "type": "named_expr",
+            "target": name.value,
+            "value": value,
+            "first_formatting": walrus.hidden_tokens_before,
+            "second_formatting": walrus.hidden_tokens_after,
+        }
+
     @pg.production("or_test : and_test OR or_test")
     @pg.production("and_test : not_test AND and_test")
     def and_or_node(pack):
@@ -143,7 +154,7 @@ def include_operators(pg):
             "type": "unitary_operator",
             "value": "not",
             "target": comparison,
-            "formatting": not_.hidden_tokens_after
+            "formatting": not_.hidden_tokens_after,
         }
 
     @pg.production("comparison : expr LESS comparison")
@@ -167,7 +178,7 @@ def include_operators(pg):
             },
             "second": comparison_,
             "first_formatting": comparison_operator.hidden_tokens_before,
-            "second_formatting": comparison_operator.hidden_tokens_after
+            "second_formatting": comparison_operator.hidden_tokens_after,
         }
 
     @pg.production("comparison : expr IS NOT comparison")
@@ -180,7 +191,7 @@ def include_operators(pg):
                 "type": "comparison_operator",
                 "first": comparison_operator.value,
                 "second": comparison_operator2.value,
-                "formatting": comparison_operator.hidden_tokens_after
+                "formatting": comparison_operator.hidden_tokens_after,
             },
             "first": expr,
             "second": comparison_,
@@ -210,14 +221,17 @@ def include_operators(pg):
             "first": first,
             "second": second,
             "first_formatting": operator.hidden_tokens_before,
-            "second_formatting": operator.hidden_tokens_after
+            "second_formatting": operator.hidden_tokens_after,
         }
 
     @pg.production("factor : PLUS factor")
     @pg.production("factor : MINUS factor")
     @pg.production("factor : TILDE factor")
     def factor_unitary_operator_space(pack):
-        (operator, factor,) = pack
+        (
+            operator,
+            factor,
+        ) = pack
         return {
             "type": "unitary_operator",
             "value": operator.value,
@@ -238,31 +252,32 @@ def include_operators(pg):
             },
             "second": factor,
             "first_formatting": double_star.hidden_tokens_before,
-            "second_formatting": double_star.hidden_tokens_after
+            "second_formatting": double_star.hidden_tokens_after,
         }
 
     @pg.production("power : atomtrailers")
     def power_atomtrailers(pack):
         (atomtrailers,) = pack
-        return {
-            "type": "atomtrailers",
-            "value": atomtrailers
-        }
+        return {"type": "atomtrailers", "value": atomtrailers}
 
     @pg.production("power : NAME SPACE atomtrailers")
     def power_atomtrailers_await(pack):
-        (await_, space, atomtrailers,) = pack
+        (
+            await_,
+            space,
+            atomtrailers,
+        ) = pack
 
         if await_.value != "await":
-            raise ParsingError("The only possible keyword before an atomtrailers is 'await', not '%s'" % await_.value)
+            raise ParsingError(f"The only possible keyword before an atomtrailers is 'await', not '{await_.value}'")
 
         return {
             "type": "await",
-            "formatting": [{'type': 'space', 'value': space.value}],
+            "formatting": [{"type": "space", "value": space.value}],
             "value": {
                 "type": "atomtrailers",
                 "value": atomtrailers,
-            }
+            },
         }
 
     @pg.production("atomtrailers : atom")
@@ -287,40 +302,50 @@ def include_operators(pg):
 
     @pg.production("trailer : DOT NAME")
     def trailer(pack):
-        (dot, name,) = pack
-        return [{
-            "type": "dot",
-            "first_formatting": dot.hidden_tokens_before,
-            "second_formatting": dot.hidden_tokens_after,
-        }, {
-            "type": "name",
-            "value": name.value,
-        }]
+        (
+            dot,
+            name,
+        ) = pack
+        return [
+            {
+                "type": "dot",
+                "first_formatting": dot.hidden_tokens_before,
+                "second_formatting": dot.hidden_tokens_after,
+            },
+            {
+                "type": "name",
+                "value": name.value,
+            },
+        ]
 
     @pg.production("trailer : LEFT_PARENTHESIS argslist RIGHT_PARENTHESIS")
     def trailer_call(pack):
         (left, argslist, right) = pack
-        return [{
-            "type": "call",
-            "value": argslist,
-            "first_formatting": left.hidden_tokens_before,
-            "second_formatting": left.hidden_tokens_after,
-            "third_formatting": right.hidden_tokens_before,
-            "fourth_formatting": right.hidden_tokens_after,
-        }]
+        return [
+            {
+                "type": "call",
+                "value": argslist,
+                "first_formatting": left.hidden_tokens_before,
+                "second_formatting": left.hidden_tokens_after,
+                "third_formatting": right.hidden_tokens_before,
+                "fourth_formatting": right.hidden_tokens_after,
+            }
+        ]
 
     @pg.production("trailer : LEFT_SQUARE_BRACKET subscript RIGHT_SQUARE_BRACKET")
     @pg.production("trailer : LEFT_SQUARE_BRACKET subscriptlist RIGHT_SQUARE_BRACKET")
     def trailer_getitem_ellipsis(pack):
         (left, subscript, right) = pack
-        return [{
-            "type": "getitem",
-            "value": subscript,
-            "first_formatting": left.hidden_tokens_before,
-            "second_formatting": left.hidden_tokens_after,
-            "third_formatting": right.hidden_tokens_before,
-            "fourth_formatting": right.hidden_tokens_after,
-        }]
+        return [
+            {
+                "type": "getitem",
+                "value": subscript,
+                "first_formatting": left.hidden_tokens_before,
+                "second_formatting": left.hidden_tokens_after,
+                "third_formatting": right.hidden_tokens_before,
+                "fourth_formatting": right.hidden_tokens_after,
+            }
+        ]
 
     @pg.production("subscript : ELLIPSIS")
     @pg.production("atom : ELLIPSIS")
@@ -370,7 +395,10 @@ def include_operators(pg):
 
     @pg.production("slice : test COLON")
     def slice_lower(pack):
-        (test, colon,) = pack
+        (
+            test,
+            colon,
+        ) = pack
         return {
             "type": "slice",
             "lower": test,
@@ -400,7 +428,10 @@ def include_operators(pg):
 
     @pg.production("slice : COLON test")
     def slice_upper(pack):
-        (colon, test,) = pack
+        (
+            colon,
+            test,
+        ) = pack
         return {
             "type": "slice",
             "lower": {},
@@ -445,7 +476,11 @@ def include_operators(pg):
 
     @pg.production("slice : test COLON test")
     def slice_lower_upper(pack):
-        (test, colon, test2,) = pack
+        (
+            test,
+            colon,
+            test2,
+        ) = pack
         return {
             "type": "slice",
             "lower": test,

@@ -13,6 +13,6 @@ class Dumper(RenderWalker):
         self.dump += constant
 
     def dump(self, tree):
-        self.dump = ''
+        self.dump = ""
         self.walk(tree)
         return self.dump

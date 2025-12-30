@@ -141,6 +141,39 @@ def include_control_structures(pg):
             "value": suite
         }]
 
+    # PEP 654 - Exception Groups (except*)
+    @pg.production("except_stmt : EXCEPT STAR test AS test COLON suite")
+    def except_star_as_stmt(pack):
+        (except_, star, test, as_, test2, colon, suite) = pack
+        return [{
+            "type": "except_star",
+            "first_formatting": except_.hidden_tokens_after,
+            "second_formatting": star.hidden_tokens_after,
+            "third_formatting": as_.hidden_tokens_before,
+            "fourth_formatting": as_.hidden_tokens_after,
+            "fifth_formatting": colon.hidden_tokens_before,
+            "sixth_formatting": colon.hidden_tokens_after,
+            "target": test2,
+            "exception": test,
+            "value": suite
+        }]
+
+    @pg.production("except_stmt : EXCEPT STAR test COLON suite")
+    def except_star_stmt(pack):
+        (except_, star, test, colon, suite) = pack
+        return [{
+            "type": "except_star",
+            "first_formatting": except_.hidden_tokens_after,
+            "second_formatting": star.hidden_tokens_after,
+            "third_formatting": [],
+            "fourth_formatting": [],
+            "fifth_formatting": colon.hidden_tokens_before,
+            "sixth_formatting": colon.hidden_tokens_after,
+            "target": {},
+            "exception": test,
+            "value": suite
+        }]
+
     @pg.production("finally_stmt : FINALLY COLON suite")
     def finally_stmt(pack):
         (finally_, colon, suite) = pack

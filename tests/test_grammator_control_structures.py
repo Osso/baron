@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding:Utf-8 -*-
 
 import pytest
 
@@ -10,40 +9,38 @@ from .test_utils import parse_multi
 
 def test_if_stmt():
     "if a: pass"
-    parse_multi([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-    ], [
-        {
-            "type": "ifelseblock",
-            "value": [
-                {
-                    "type": "if",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "third_formatting": [],
-                    "test": {
-                        "type": "name",
-                        "value": "a",
-                    },
-                    "value": [
-                        {
-                            "type": "pass",
+    parse_multi(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+        ],
+        [
+            {
+                "type": "ifelseblock",
+                "value": [
+                    {
+                        "type": "if",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "test": {
+                            "type": "name",
+                            "value": "a",
                         },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ],
-                }
-            ],
-        }
-    ])
+                        "value": [
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
+                    }
+                ],
+            }
+        ],
+    )
 
 
 def test_if_stmt_indent():
@@ -51,49 +48,42 @@ def test_if_stmt_indent():
     if a:
         pass
     """
-    parse_multi([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "ifelseblock",
-            "value": [
-                {
-                    "type": "if",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "third_formatting": [],
-                    "test": {
-                        "type": "name",
-                        "value": "a",
-                    },
-                    "value": [
-                        {
-                            "formatting": [],
-                            "type": "endl",
-                            "value": "\n",
-                            "indent": "    "
+    parse_multi(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "ifelseblock",
+                "value": [
+                    {
+                        "type": "if",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "test": {
+                            "type": "name",
+                            "value": "a",
                         },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ],
-                }
-            ]
-        }
-    ])
+                        "value": [
+                            {"formatting": [], "type": "endl", "value": "\n", "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
+                    }
+                ],
+            }
+        ],
+    )
 
 
 def test_if_stmt_indent_two_endls():
@@ -102,56 +92,44 @@ def test_if_stmt_indent_two_endls():
 
         pass
     """
-    parse_multi([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "ifelseblock",
-            "value": [
-                {
-                    "type": "if",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "third_formatting": [],
-                    "test": {
-                        "type": "name",
-                        "value": "a",
-                    },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "value": "\n",
-                            "formatting": [],
-                            "indent": ""
+    parse_multi(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "ifelseblock",
+                "value": [
+                    {
+                        "type": "if",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "test": {
+                            "type": "name",
+                            "value": "a",
                         },
-                        {
-                            "type": "endl",
-                            "value": "\n",
-                            "formatting": [],
-                            "indent": "    "
-                        },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ],
-                }
-            ]
-        }
-    ])
+                        "value": [
+                            {"type": "endl", "value": "\n", "formatting": [], "indent": ""},
+                            {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
+                    }
+                ],
+            }
+        ],
+    )
 
 
 def test_if_stmt_indent_multiple_endls():
@@ -161,63 +139,46 @@ def test_if_stmt_indent_multiple_endls():
 
         pass
     """
-    parse_multi([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n'),
-        ('ENDL', '\n', [], [('SPACE', '  ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "ifelseblock",
-            "value": [
-                {
-                    "type": "if",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "third_formatting": [],
-                    "test": {
-                        "type": "name",
-                        "value": "a",
-                    },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "formatting": [],
-                            "value": "\n",
-                            "indent": ""
+    parse_multi(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n"),
+            ("ENDL", "\n", [], [("SPACE", "  ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "ifelseblock",
+                "value": [
+                    {
+                        "type": "if",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "test": {
+                            "type": "name",
+                            "value": "a",
                         },
-                        {
-                            "type": "endl",
-                            "formatting": [],
-                            "value": "\n",
-                            "indent": "  "
-                        },
-                        {
-                            "type": "endl",
-                            "formatting": [],
-                            "value": "\n",
-                            "indent": "    "
-                        },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ],
-                }
-            ]
-        }
-    ])
+                        "value": [
+                            {"type": "endl", "formatting": [], "value": "\n", "indent": ""},
+                            {"type": "endl", "formatting": [], "value": "\n", "indent": "  "},
+                            {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
+                    }
+                ],
+            }
+        ],
+    )
 
 
 def test_if_else_stmt_indent():
@@ -227,78 +188,66 @@ def test_if_else_stmt_indent():
     else:
         pass
     """
-    parse_multi([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('ELSE', 'else', [], [('SPACE', ' ')]),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "ifelseblock",
-            "value": [
-                {
-                    "type": "if",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "third_formatting": [],
-                    "test": {
-                        "type": "name",
-                        "value": "a",
+    parse_multi(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("ELSE", "else", [], [("SPACE", " ")]),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "ifelseblock",
+                "value": [
+                    {
+                        "type": "if",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "test": {
+                            "type": "name",
+                            "value": "a",
+                        },
+                        "value": [
+                            {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
                     },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "value": "\n",
-                            "formatting": [],
-                            "indent": "    "
-                        },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ],
-                },
-                {
-                    "type": "else",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "value": [
-                        {
-                            "type": "endl",
-                            "value": "\n",
-                            "formatting": [],
-                            "indent": "    "
-                        },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n",
-                        }
-                    ]
-                }
-            ]
-        }
-    ])
+                    {
+                        "type": "else",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "value": [
+                            {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {
+                                "formatting": [],
+                                "indent": "",
+                                "type": "endl",
+                                "value": "\n",
+                            },
+                        ],
+                    },
+                ],
+            }
+        ],
+    )
 
 
 def test_if_elif_elif_stmt_indent():
@@ -310,119 +259,92 @@ def test_if_elif_elif_stmt_indent():
     elif c :
         pass
     """
-    parse_multi([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('ELIF', 'elif', [], [('SPACE', ' ')]),
-        ('NAME', 'b'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('ELIF', 'elif', [], [('SPACE', ' ')]),
-        ('NAME', 'c'),
-        ('COLON', ':', [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "ifelseblock",
-            "value": [
-                {
-                    "type": "if",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "third_formatting": [],
-                    "test": {
-                        "type": "name",
-                        "value": "a",
+    parse_multi(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("ELIF", "elif", [], [("SPACE", " ")]),
+            ("NAME", "b"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("ELIF", "elif", [], [("SPACE", " ")]),
+            ("NAME", "c"),
+            ("COLON", ":", [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "ifelseblock",
+                "value": [
+                    {
+                        "type": "if",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "test": {
+                            "type": "name",
+                            "value": "a",
+                        },
+                        "value": [
+                            {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
                     },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "value": "\n",
-                            "formatting": [],
-                            "indent": "    "
+                    {
+                        "type": "elif",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "test": {
+                            "type": "name",
+                            "value": "b",
                         },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ],
-                },
-                {
-                    "type": "elif",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "third_formatting": [],
-                    "test": {
-                        "type": "name",
-                        "value": "b",
+                        "value": [
+                            {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
                     },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "value": "\n",
-                            "formatting": [],
-                            "indent": "    "
+                    {
+                        "type": "elif",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [{"type": "space", "value": " "}],
+                        "third_formatting": [],
+                        "test": {
+                            "type": "name",
+                            "value": "c",
                         },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ],
-                },
-                {
-                    "type": "elif",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [{"type": "space", "value": " "}],
-                    "third_formatting": [],
-                    "test": {
-                        "type": "name",
-                        "value": "c",
+                        "value": [
+                            {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
                     },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "formatting": [],
-                            "value": "\n",
-                            "indent": "    "
-                        },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ],
-                }
-            ]
-        }
-    ])
+                ],
+            }
+        ],
+    )
 
 
 def test_if_elif_elif_else_stmt_indent():
@@ -436,148 +358,121 @@ def test_if_elif_elif_else_stmt_indent():
     else:
         pass
     """
-    parse_multi([
-        ('IF', 'if', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('ELIF', 'elif', [], [('SPACE', ' ')]),
-        ('NAME', 'b'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('ELIF', 'elif', [], [('SPACE', ' ')]),
-        ('NAME', 'c'),
-        ('COLON', ':', [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('ELSE', 'else', [], [('SPACE', ' ')]),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "ifelseblock",
-            "value": [
-                {
-                    "type": "if",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "third_formatting": [],
-                    "test": {
-                        "type": "name",
-                        "value": "a",
+    parse_multi(
+        [
+            ("IF", "if", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("ELIF", "elif", [], [("SPACE", " ")]),
+            ("NAME", "b"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("ELIF", "elif", [], [("SPACE", " ")]),
+            ("NAME", "c"),
+            ("COLON", ":", [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("ELSE", "else", [], [("SPACE", " ")]),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "ifelseblock",
+                "value": [
+                    {
+                        "type": "if",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "test": {
+                            "type": "name",
+                            "value": "a",
+                        },
+                        "value": [
+                            {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
                     },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "formatting": [],
-                            "value": "\n",
-                            "indent": "    "
+                    {
+                        "type": "elif",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "test": {
+                            "type": "name",
+                            "value": "b",
                         },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ],
-                },
-                {
-                    "type": "elif",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "third_formatting": [],
-                    "test": {
-                        "type": "name",
-                        "value": "b",
+                        "value": [
+                            {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {
+                                "type": "endl",
+                                "value": "\n",
+                                "formatting": [],
+                                "indent": "",
+                            },
+                        ],
                     },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "value": "\n",
-                            "formatting": [],
-                            "indent": "    "
+                    {
+                        "type": "elif",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [{"type": "space", "value": " "}],
+                        "third_formatting": [],
+                        "test": {
+                            "type": "name",
+                            "value": "c",
                         },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "type": "endl",
-                            "value": "\n",
-                            "formatting": [],
-                            "indent": "",
-                        }
-                    ],
-                },
-                {
-                    "type": "elif",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [{"type": "space", "value": " "}],
-                    "third_formatting": [],
-                    "test": {
-                        "type": "name",
-                        "value": "c",
+                        "value": [
+                            {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
                     },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "formatting": [],
-                            "value": "\n",
-                            "indent": "    "
-                        },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ],
-                },
-                {
-                    "type": "else",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "value": [
-                        {
-                            "formatting": [],
-                            "type": "endl",
-                            "value": "\n",
-                            "indent": "    "
-                        },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n",
-                        }
-                    ]
-                }
-            ]
-        }
-    ])
+                    {
+                        "type": "else",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "value": [
+                            {"formatting": [], "type": "endl", "value": "\n", "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {
+                                "formatting": [],
+                                "indent": "",
+                                "type": "endl",
+                                "value": "\n",
+                            },
+                        ],
+                    },
+                ],
+            }
+        ],
+    )
 
 
 def test_while_stmt_indent():
@@ -585,45 +480,38 @@ def test_while_stmt_indent():
     while a:
         pass
     """
-    parse_multi([
-        ('WHILE', 'while', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "while",
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [],
-            "third_formatting": [],
-            "else": {},
-            "test": {
-                "type": "name",
-                "value": "a",
-            },
-            "value": [
-                {
-                    "type": "endl",
-                    "formatting": [],
-                    "value": "\n",
-                    "indent": "    "
+    parse_multi(
+        [
+            ("WHILE", "while", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "while",
+                "first_formatting": [{"type": "space", "value": " "}],
+                "second_formatting": [],
+                "third_formatting": [],
+                "else": {},
+                "test": {
+                    "type": "name",
+                    "value": "a",
                 },
-                {
-                    "type": "pass",
-                },
-                {
-                    "formatting": [],
-                    "indent": "",
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+                "value": [
+                    {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                    {
+                        "type": "pass",
+                    },
+                    {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_while_stmt_indent_third_formatting():
@@ -631,45 +519,38 @@ def test_while_stmt_indent_third_formatting():
     while a :
         pass
     """
-    parse_multi([
-        ('WHILE', 'while', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':', [('SPACE', ' ')], [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "while",
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [{"type": "space", "value": " "}],
-            "third_formatting": [{"type": "space", "value": " "}],
-            "else": {},
-            "test": {
-                "type": "name",
-                "value": "a",
-            },
-            "value": [
-                {
-                    "type": "endl",
-                    "formatting": [],
-                    "value": "\n",
-                    "indent": "    "
+    parse_multi(
+        [
+            ("WHILE", "while", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":", [("SPACE", " ")], [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "while",
+                "first_formatting": [{"type": "space", "value": " "}],
+                "second_formatting": [{"type": "space", "value": " "}],
+                "third_formatting": [{"type": "space", "value": " "}],
+                "else": {},
+                "test": {
+                    "type": "name",
+                    "value": "a",
                 },
-                {
-                    "type": "pass",
-                },
-                {
-                    "formatting": [],
-                    "indent": "",
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+                "value": [
+                    {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                    {
+                        "type": "pass",
+                    },
+                    {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_while_else_stmt_indent():
@@ -679,73 +560,61 @@ def test_while_else_stmt_indent():
     else:
         pass
     """
-    parse_multi([
-        ('WHILE', 'while', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('ELSE', 'else', [], [('SPACE', " ")]),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "while",
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [],
-            "third_formatting": [],
-            "test": {
-                "type": "name",
-                "value": "a",
-            },
-            "value": [
-                {
-                    "type": "endl",
-                    "value": "\n",
-                    "formatting": [],
-                    "indent": "    "
-                },
-                {
-                    "type": "pass",
-                },
-                {
-                    "formatting": [],
-                    "indent": "",
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-            "else": {
-                "type": "else",
+    parse_multi(
+        [
+            ("WHILE", "while", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("ELSE", "else", [], [("SPACE", " ")]),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "while",
                 "first_formatting": [{"type": "space", "value": " "}],
                 "second_formatting": [],
+                "third_formatting": [],
+                "test": {
+                    "type": "name",
+                    "value": "a",
+                },
                 "value": [
-                    {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": "    "
-                    },
+                    {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
                     {
                         "type": "pass",
                     },
-                    {
-                        "indent": "",
-                        "formatting": [],
-                        "type": "endl",
-                        "value": "\n",
-                    }
-                ]
+                    {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                ],
+                "else": {
+                    "type": "else",
+                    "first_formatting": [{"type": "space", "value": " "}],
+                    "second_formatting": [],
+                    "value": [
+                        {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                        {
+                            "type": "pass",
+                        },
+                        {
+                            "indent": "",
+                            "formatting": [],
+                            "type": "endl",
+                            "value": "\n",
+                        },
+                    ],
+                },
             }
-        }
-    ])
+        ],
+    )
 
 
 def test_for_stmt_indent():
@@ -753,55 +622,48 @@ def test_for_stmt_indent():
     for i in a:
         pass
     """
-    parse_multi([
-        ('FOR', 'for', [], [('SPACE', ' ')]),
-        ('NAME', 'i'),
-        ('IN', 'in', [('SPACE', ' ')], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':', [], [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "for",
-            "async": False,
-            "async_formatting": [],
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [{"type": "space", "value": " "}],
-            "third_formatting": [{"type": "space", "value": " "}],
-            "fourth_formatting": [],
-            "fifth_formatting": [{"type": "space", "value": " "}],
-            "else": {},
-            "iterator": {
-                "type": "name",
-                "value": "i",
-            },
-            "target": {
-                "type": "name",
-                "value": "a",
-            },
-            "value": [
-                {
-                    "type": "endl",
-                    "value": "\n",
-                    "formatting": [],
-                    "indent": "    "
+    parse_multi(
+        [
+            ("FOR", "for", [], [("SPACE", " ")]),
+            ("NAME", "i"),
+            ("IN", "in", [("SPACE", " ")], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":", [], [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "for",
+                "async": False,
+                "async_formatting": [],
+                "first_formatting": [{"type": "space", "value": " "}],
+                "second_formatting": [{"type": "space", "value": " "}],
+                "third_formatting": [{"type": "space", "value": " "}],
+                "fourth_formatting": [],
+                "fifth_formatting": [{"type": "space", "value": " "}],
+                "else": {},
+                "iterator": {
+                    "type": "name",
+                    "value": "i",
                 },
-                {
-                    "type": "pass",
+                "target": {
+                    "type": "name",
+                    "value": "a",
                 },
-                {
-                    "indent": "",
-                    "formatting": [],
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+                "value": [
+                    {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                    {
+                        "type": "pass",
+                    },
+                    {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_async_for_stmt_indent():
@@ -809,57 +671,50 @@ def test_async_for_stmt_indent():
     async for i in a:
         pass
     """
-    parse_multi([
-        ('NAME', 'async', [], []),
-        ('SPACE', ' '),
-        ('FOR', 'for', [], [('SPACE', ' ')]),
-        ('NAME', 'i'),
-        ('IN', 'in', [('SPACE', ' ')], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':', [], [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "for",
-            "async": True,
-            "async_formatting": [{"type": "space", "value": " "}],
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [{"type": "space", "value": " "}],
-            "third_formatting": [{"type": "space", "value": " "}],
-            "fourth_formatting": [],
-            "fifth_formatting": [{"type": "space", "value": " "}],
-            "else": {},
-            "iterator": {
-                "type": "name",
-                "value": "i",
-            },
-            "target": {
-                "type": "name",
-                "value": "a",
-            },
-            "value": [
-                {
-                    "type": "endl",
-                    "value": "\n",
-                    "formatting": [],
-                    "indent": "    "
+    parse_multi(
+        [
+            ("NAME", "async", [], []),
+            ("SPACE", " "),
+            ("FOR", "for", [], [("SPACE", " ")]),
+            ("NAME", "i"),
+            ("IN", "in", [("SPACE", " ")], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":", [], [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "for",
+                "async": True,
+                "async_formatting": [{"type": "space", "value": " "}],
+                "first_formatting": [{"type": "space", "value": " "}],
+                "second_formatting": [{"type": "space", "value": " "}],
+                "third_formatting": [{"type": "space", "value": " "}],
+                "fourth_formatting": [],
+                "fifth_formatting": [{"type": "space", "value": " "}],
+                "else": {},
+                "iterator": {
+                    "type": "name",
+                    "value": "i",
                 },
-                {
-                    "type": "pass",
+                "target": {
+                    "type": "name",
+                    "value": "a",
                 },
-                {
-                    "indent": "",
-                    "formatting": [],
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+                "value": [
+                    {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                    {
+                        "type": "pass",
+                    },
+                    {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_async_for_stmt_indent_bad_keyword():
@@ -868,20 +723,23 @@ def test_async_for_stmt_indent_bad_keyword():
         pass
     """
     with pytest.raises(ParsingError):
-        parse_multi([
-            ('NAME', 'not_async', [], []),
-            ('SPACE', ' '),
-            ('FOR', 'for', [], [('SPACE', ' ')]),
-            ('NAME', 'i'),
-            ('IN', 'in', [('SPACE', ' ')], [('SPACE', ' ')]),
-            ('NAME', 'a'),
-            ('COLON', ':', [], [('SPACE', ' ')]),
-            ('ENDL', '\n', [], [('SPACE', '    ')]),
-            ('INDENT', ''),
-            ('PASS', 'pass'),
-            ('ENDL', '\n'),
-            ('DEDENT', ''),
-        ], [])
+        parse_multi(
+            [
+                ("NAME", "not_async", [], []),
+                ("SPACE", " "),
+                ("FOR", "for", [], [("SPACE", " ")]),
+                ("NAME", "i"),
+                ("IN", "in", [("SPACE", " ")], [("SPACE", " ")]),
+                ("NAME", "a"),
+                ("COLON", ":", [], [("SPACE", " ")]),
+                ("ENDL", "\n", [], [("SPACE", "    ")]),
+                ("INDENT", ""),
+                ("PASS", "pass"),
+                ("ENDL", "\n"),
+                ("DEDENT", ""),
+            ],
+            [],
+        )
 
 
 def test_for_else_stmt_indent():
@@ -891,83 +749,71 @@ def test_for_else_stmt_indent():
     else:
         pass
     """
-    parse_multi([
-        ('FOR', 'for', [], [('SPACE', ' ')]),
-        ('NAME', 'i'),
-        ('IN', 'in', [('SPACE', ' ')], [('SPACE', ' ')]),
-        ('NAME', 'b'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('ELSE', 'else'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "for",
-            "async": False,
-            "async_formatting": [],
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [{"type": "space", "value": " "}],
-            "third_formatting": [{"type": "space", "value": " "}],
-            "fourth_formatting": [],
-            "fifth_formatting": [],
-            "else": {
-                "type": "else",
-                "first_formatting": [],
-                "second_formatting": [],
+    parse_multi(
+        [
+            ("FOR", "for", [], [("SPACE", " ")]),
+            ("NAME", "i"),
+            ("IN", "in", [("SPACE", " ")], [("SPACE", " ")]),
+            ("NAME", "b"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("ELSE", "else"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "for",
+                "async": False,
+                "async_formatting": [],
+                "first_formatting": [{"type": "space", "value": " "}],
+                "second_formatting": [{"type": "space", "value": " "}],
+                "third_formatting": [{"type": "space", "value": " "}],
+                "fourth_formatting": [],
+                "fifth_formatting": [],
+                "else": {
+                    "type": "else",
+                    "first_formatting": [],
+                    "second_formatting": [],
+                    "value": [
+                        {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                        {
+                            "type": "pass",
+                        },
+                        {
+                            "indent": "",
+                            "formatting": [],
+                            "type": "endl",
+                            "value": "\n",
+                        },
+                    ],
+                },
+                "iterator": {
+                    "type": "name",
+                    "value": "i",
+                },
+                "target": {
+                    "type": "name",
+                    "value": "b",
+                },
                 "value": [
-                    {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": "    "
-                    },
+                    {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
                     {
                         "type": "pass",
                     },
-                    {
-                        "indent": "",
-                        "formatting": [],
-                        "type": "endl",
-                        "value": "\n",
-                    }
-                ]
-            },
-            "iterator": {
-                "type": "name",
-                "value": "i",
-            },
-            "target": {
-                "type": "name",
-                "value": "b",
-            },
-            "value": [
-                {
-                    "type": "endl",
-                    "formatting": [],
-                    "value": "\n",
-                    "indent": "    "
-                },
-                {
-                    "type": "pass",
-                },
-                {
-                    "indent": "",
-                    "formatting": [],
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+                    {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_async_for_else_stmt_indent():
@@ -977,85 +823,73 @@ def test_async_for_else_stmt_indent():
     else:
         pass
     """
-    parse_multi([
-        ('NAME', 'async', [], []),
-        ('SPACE', ' '),
-        ('FOR', 'for', [], [('SPACE', ' ')]),
-        ('NAME', 'i'),
-        ('IN', 'in', [('SPACE', ' ')], [('SPACE', ' ')]),
-        ('NAME', 'b'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('ELSE', 'else'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "for",
-            "async": True,
-            "async_formatting": [{"type": "space", "value": " "}],
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [{"type": "space", "value": " "}],
-            "third_formatting": [{"type": "space", "value": " "}],
-            "fourth_formatting": [],
-            "fifth_formatting": [],
-            "else": {
-                "type": "else",
-                "first_formatting": [],
-                "second_formatting": [],
+    parse_multi(
+        [
+            ("NAME", "async", [], []),
+            ("SPACE", " "),
+            ("FOR", "for", [], [("SPACE", " ")]),
+            ("NAME", "i"),
+            ("IN", "in", [("SPACE", " ")], [("SPACE", " ")]),
+            ("NAME", "b"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("ELSE", "else"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "for",
+                "async": True,
+                "async_formatting": [{"type": "space", "value": " "}],
+                "first_formatting": [{"type": "space", "value": " "}],
+                "second_formatting": [{"type": "space", "value": " "}],
+                "third_formatting": [{"type": "space", "value": " "}],
+                "fourth_formatting": [],
+                "fifth_formatting": [],
+                "else": {
+                    "type": "else",
+                    "first_formatting": [],
+                    "second_formatting": [],
+                    "value": [
+                        {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                        {
+                            "type": "pass",
+                        },
+                        {
+                            "indent": "",
+                            "formatting": [],
+                            "type": "endl",
+                            "value": "\n",
+                        },
+                    ],
+                },
+                "iterator": {
+                    "type": "name",
+                    "value": "i",
+                },
+                "target": {
+                    "type": "name",
+                    "value": "b",
+                },
                 "value": [
-                    {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": "    "
-                    },
+                    {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
                     {
                         "type": "pass",
                     },
-                    {
-                        "indent": "",
-                        "formatting": [],
-                        "type": "endl",
-                        "value": "\n",
-                    }
-                ]
-            },
-            "iterator": {
-                "type": "name",
-                "value": "i",
-            },
-            "target": {
-                "type": "name",
-                "value": "b",
-            },
-            "value": [
-                {
-                    "type": "endl",
-                    "formatting": [],
-                    "value": "\n",
-                    "indent": "    "
-                },
-                {
-                    "type": "pass",
-                },
-                {
-                    "indent": "",
-                    "formatting": [],
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+                    {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_async_for_else_stmt_indent_bad_keyword():
@@ -1066,27 +900,30 @@ def test_async_for_else_stmt_indent_bad_keyword():
         pass
     """
     with pytest.raises(ParsingError):
-        parse_multi([
-            ('NAME', 'not_async', [], []),
-            ('SPACE', ' '),
-            ('FOR', 'for', [], [('SPACE', ' ')]),
-            ('NAME', 'i'),
-            ('IN', 'in', [('SPACE', ' ')], [('SPACE', ' ')]),
-            ('NAME', 'b'),
-            ('COLON', ':'),
-            ('ENDL', '\n', [], [('SPACE', '    ')]),
-            ('INDENT', ''),
-            ('PASS', 'pass'),
-            ('ENDL', '\n'),
-            ('DEDENT', ''),
-            ('ELSE', 'else'),
-            ('COLON', ':'),
-            ('ENDL', '\n', [], [('SPACE', '    ')]),
-            ('INDENT', ''),
-            ('PASS', 'pass'),
-            ('ENDL', '\n'),
-            ('DEDENT', ''),
-        ], [])
+        parse_multi(
+            [
+                ("NAME", "not_async", [], []),
+                ("SPACE", " "),
+                ("FOR", "for", [], [("SPACE", " ")]),
+                ("NAME", "i"),
+                ("IN", "in", [("SPACE", " ")], [("SPACE", " ")]),
+                ("NAME", "b"),
+                ("COLON", ":"),
+                ("ENDL", "\n", [], [("SPACE", "    ")]),
+                ("INDENT", ""),
+                ("PASS", "pass"),
+                ("ENDL", "\n"),
+                ("DEDENT", ""),
+                ("ELSE", "else"),
+                ("COLON", ":"),
+                ("ENDL", "\n", [], [("SPACE", "    ")]),
+                ("INDENT", ""),
+                ("PASS", "pass"),
+                ("ENDL", "\n"),
+                ("DEDENT", ""),
+            ],
+            [],
+        )
 
 
 def test_try_finally_stmt_indent():
@@ -1096,69 +933,52 @@ def test_try_finally_stmt_indent():
     finally :
         pass
     """
-    parse_multi([
-        ('TRY', 'try'),
-        ('COLON', ':', [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('FINALLY', 'finally'),
-        ('COLON', ':', [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "try",
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [],
-            "else": {},
-            "finally": {
-                "type": "finally",
+    parse_multi(
+        [
+            ("TRY", "try"),
+            ("COLON", ":", [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("FINALLY", "finally"),
+            ("COLON", ":", [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "try",
                 "first_formatting": [{"type": "space", "value": " "}],
                 "second_formatting": [],
+                "else": {},
+                "finally": {
+                    "type": "finally",
+                    "first_formatting": [{"type": "space", "value": " "}],
+                    "second_formatting": [],
+                    "value": [
+                        {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                        {
+                            "type": "pass",
+                        },
+                        {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                    ],
+                },
+                "excepts": [],
                 "value": [
-                    {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": "    "
-                    },
+                    {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
                     {
                         "type": "pass",
                     },
-                    {
-                        "indent": "",
-                        "formatting": [],
-                        "type": "endl",
-                        "value": "\n"
-                    }
+                    {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
                 ],
-            },
-            "excepts": [],
-            "value": [
-                {
-                    "type": "endl",
-                    "value": "\n",
-                    "formatting": [],
-                    "indent": "    "
-                },
-                {
-                    "type": "pass",
-                },
-                {
-                    "indent": "",
-                    "formatting": [],
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+            }
+        ],
+    )
 
 
 def test_try_excepts_stmt_empty():
@@ -1168,77 +988,60 @@ def test_try_excepts_stmt_empty():
     except:
         pass
     """
-    parse_multi([
-        ('TRY', 'try'),
-        ('COLON', ':', [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('EXCEPT', 'except', [], []),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "try",
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [],
-            "else": {},
-            "finally": {},
-            "excepts": [
-                {
-                    "type": "except",
-                    "first_formatting": [],
-                    "second_formatting": [],
-                    "third_formatting": [],
-                    "fourth_formatting": [],
-                    "fifth_formatting": [],
-                    "delimiter": "",
-                    "target": {},
-                    "exception": {},
-                    "value": [
-                        {
-                            "type": "endl",
-                            "formatting": [],
-                            "value": "\n",
-                            "indent": "    "
-                        },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "indent": "",
-                            "formatting": [],
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ]
-                }
-            ],
-            "value": [
-                {
-                    "type": "endl",
-                    "formatting": [],
-                    "value": "\n",
-                    "indent": "    "
-                },
-                {
-                    "type": "pass",
-                },
-                {
-                    "indent": "",
-                    "formatting": [],
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+    parse_multi(
+        [
+            ("TRY", "try"),
+            ("COLON", ":", [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("EXCEPT", "except", [], []),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "try",
+                "first_formatting": [{"type": "space", "value": " "}],
+                "second_formatting": [],
+                "else": {},
+                "finally": {},
+                "excepts": [
+                    {
+                        "type": "except",
+                        "first_formatting": [],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "fourth_formatting": [],
+                        "fifth_formatting": [],
+                        "delimiter": "",
+                        "target": {},
+                        "exception": {},
+                        "value": [
+                            {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                        ],
+                    }
+                ],
+                "value": [
+                    {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                    {
+                        "type": "pass",
+                    },
+                    {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_try_excepts_stmt_indent():
@@ -1250,120 +1053,93 @@ def test_try_excepts_stmt_indent():
     except Exception:
         pass
     """
-    parse_multi([
-        ('TRY', 'try'),
-        ('COLON', ':', [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('EXCEPT', 'except', [], [('SPACE', ' ')]),
-        ('NAME', 'IOError'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('EXCEPT', 'except', [], [('SPACE', ' ')]),
-        ('NAME', 'Exception'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "try",
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [],
-            "else": {},
-            "finally": {},
-            "excepts": [
-                {
-                    "type": "except",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "third_formatting": [],
-                    "fourth_formatting": [],
-                    "fifth_formatting": [],
-                    "delimiter": "",
-                    "target": {},
-                    "exception": {
-                        "type": "name",
-                        "value": "IOError",
+    parse_multi(
+        [
+            ("TRY", "try"),
+            ("COLON", ":", [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("EXCEPT", "except", [], [("SPACE", " ")]),
+            ("NAME", "IOError"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("EXCEPT", "except", [], [("SPACE", " ")]),
+            ("NAME", "Exception"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "try",
+                "first_formatting": [{"type": "space", "value": " "}],
+                "second_formatting": [],
+                "else": {},
+                "finally": {},
+                "excepts": [
+                    {
+                        "type": "except",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "fourth_formatting": [],
+                        "fifth_formatting": [],
+                        "delimiter": "",
+                        "target": {},
+                        "exception": {
+                            "type": "name",
+                            "value": "IOError",
+                        },
+                        "value": [
+                            {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                        ],
                     },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "formatting": [],
-                            "value": "\n",
-                            "indent": "    "
+                    {
+                        "type": "except",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "fourth_formatting": [],
+                        "fifth_formatting": [],
+                        "delimiter": "",
+                        "target": {},
+                        "exception": {
+                            "type": "name",
+                            "value": "Exception",
                         },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "indent": "",
-                            "formatting": [],
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ]
-                },
-                {
-                    "type": "except",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "third_formatting": [],
-                    "fourth_formatting": [],
-                    "fifth_formatting": [],
-                    "delimiter": "",
-                    "target": {},
-                    "exception": {
-                        "type": "name",
-                        "value": "Exception",
+                        "value": [
+                            {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                        ],
                     },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "value": "\n",
-                            "formatting": [],
-                            "indent": "    "
-                        },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "indent": "",
-                            "formatting": [],
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ]
-                }
-            ],
-            "value": [
-                {
-                    "type": "endl",
-                    "formatting": [],
-                    "value": "\n",
-                    "indent": "    "
-                },
-                {
-                    "type": "pass",
-                },
-                {
-                    "indent": "",
-                    "formatting": [],
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+                ],
+                "value": [
+                    {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                    {
+                        "type": "pass",
+                    },
+                    {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_try_except_comma_stmt_indent():
@@ -1373,86 +1149,66 @@ def test_try_except_comma_stmt_indent():
     except IOError, e:
         pass
     """
-    parse_multi([
-        ('TRY', 'try'),
-        ('COLON', ':', [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('EXCEPT', 'except', [], [('SPACE', ' ')]),
-        ('NAME', 'IOError'),
-        ('COMMA', ',', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "try",
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [],
-            "else": {},
-            "finally": {},
-            "excepts": [
-                {
-                    "type": "except",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [],
-                    "third_formatting": [{"type": "space", "value": " "}],
-                    "fourth_formatting": [],
-                    "fifth_formatting": [],
-                    "delimiter": ",",
-                    "target": {
-                        "type": "name",
-                        "value": "a"
-                    },
-                    "exception": {
-                        "type": "name",
-                        "value": "IOError",
-                    },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "value": "\n",
-                            "formatting": [],
-                            "indent": "    "
+    parse_multi(
+        [
+            ("TRY", "try"),
+            ("COLON", ":", [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("EXCEPT", "except", [], [("SPACE", " ")]),
+            ("NAME", "IOError"),
+            ("COMMA", ",", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "try",
+                "first_formatting": [{"type": "space", "value": " "}],
+                "second_formatting": [],
+                "else": {},
+                "finally": {},
+                "excepts": [
+                    {
+                        "type": "except",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [{"type": "space", "value": " "}],
+                        "fourth_formatting": [],
+                        "fifth_formatting": [],
+                        "delimiter": ",",
+                        "target": {"type": "name", "value": "a"},
+                        "exception": {
+                            "type": "name",
+                            "value": "IOError",
                         },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "indent": "",
-                            "formatting": [],
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ]
-                }
-            ],
-            "value": [
-                {
-                    "formatting": [],
-                    "type": "endl",
-                    "value": "\n",
-                    "indent": "    "
-                },
-                {
-                    "type": "pass",
-                },
-                {
-                    "formatting": [],
-                    "indent": "",
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+                        "value": [
+                            {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                        ],
+                    }
+                ],
+                "value": [
+                    {"formatting": [], "type": "endl", "value": "\n", "indent": "    "},
+                    {
+                        "type": "pass",
+                    },
+                    {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_try_except_comma_stmt_else_indent():
@@ -1464,114 +1220,84 @@ def test_try_except_comma_stmt_else_indent():
     else:
         pass
     """
-    parse_multi([
-        ('TRY', 'try'),
-        ('COLON', ':', [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('EXCEPT', 'except', [], [('SPACE', ' ')]),
-        ('NAME', 'IOError'),
-        ('COMMA', ',', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('ELSE', 'else'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "try",
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [],
-            "else": {
-                "type": "else",
-                "first_formatting": [],
+    parse_multi(
+        [
+            ("TRY", "try"),
+            ("COLON", ":", [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("EXCEPT", "except", [], [("SPACE", " ")]),
+            ("NAME", "IOError"),
+            ("COMMA", ",", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("ELSE", "else"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "try",
+                "first_formatting": [{"type": "space", "value": " "}],
                 "second_formatting": [],
-                "value": [
-                    {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": "    "
-                    },
-                    {
-                        "type": "pass",
-                    },
-                    {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": ""
-                    }
-                ]
-            },
-            "finally": {},
-            "excepts": [
-                {
-                    "type": "except",
-                    "first_formatting": [{"type": "space", "value": " "}],
+                "else": {
+                    "type": "else",
+                    "first_formatting": [],
                     "second_formatting": [],
-                    "third_formatting": [{"type": "space", "value": " "}],
-                    "fourth_formatting": [],
-                    "fifth_formatting": [],
-                    "delimiter": ",",
-                    "target": {
-                        "type": "name",
-                        "value": "a"
-                    },
-                    "exception": {
-                        "type": "name",
-                        "value": "IOError",
-                    },
                     "value": [
-                        {
-                            "type": "endl",
-                            "formatting": [],
-                            "value": "\n",
-                            "indent": "    "
-                        },
+                        {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
                         {
                             "type": "pass",
                         },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ]
-                }
-            ],
-            "value": [
-                {
-                    "type": "endl",
-                    "value": "\n",
-                    "formatting": [],
-                    "indent": "    "
+                        {"type": "endl", "value": "\n", "formatting": [], "indent": ""},
+                    ],
                 },
-                {
-                    "type": "pass",
-                },
-                {
-                    "formatting": [],
-                    "indent": "",
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+                "finally": {},
+                "excepts": [
+                    {
+                        "type": "except",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [{"type": "space", "value": " "}],
+                        "fourth_formatting": [],
+                        "fifth_formatting": [],
+                        "delimiter": ",",
+                        "target": {"type": "name", "value": "a"},
+                        "exception": {
+                            "type": "name",
+                            "value": "IOError",
+                        },
+                        "value": [
+                            {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
+                    }
+                ],
+                "value": [
+                    {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                    {
+                        "type": "pass",
+                    },
+                    {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_try_except_comma_stmt_else_finally_indent():
@@ -1585,142 +1311,107 @@ def test_try_except_comma_stmt_else_finally_indent():
     finally:
         pass
     """
-    parse_multi([
-        ('TRY', 'try'),
-        ('COLON', ':', [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('EXCEPT', 'except', [], [('SPACE', ' ')]),
-        ('NAME', 'IOError'),
-        ('COMMA', ',', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('ELSE', 'else'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('FINALLY', 'finally'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "try",
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [],
-            "else": {
-                "type": "else",
-                "first_formatting": [],
+    parse_multi(
+        [
+            ("TRY", "try"),
+            ("COLON", ":", [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("EXCEPT", "except", [], [("SPACE", " ")]),
+            ("NAME", "IOError"),
+            ("COMMA", ",", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("ELSE", "else"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("FINALLY", "finally"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "try",
+                "first_formatting": [{"type": "space", "value": " "}],
                 "second_formatting": [],
-                "value": [
-                    {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": "    "
-                    },
-                    {
-                        "type": "pass",
-                    },
-                    {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": ""
-                    }
-                ]
-            },
-            "finally": {
-                "type": "finally",
-                "first_formatting": [],
-                "second_formatting": [],
-                "value": [
-                    {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": "    "
-                    },
-                    {
-                        "type": "pass",
-                    },
-                    {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": "",
-                    }
-                ],
-            },
-            "excepts": [
-                {
-                    "type": "except",
-                    "first_formatting": [{"type": "space", "value": " "}],
+                "else": {
+                    "type": "else",
+                    "first_formatting": [],
                     "second_formatting": [],
-                    "third_formatting": [{"type": "space", "value": " "}],
-                    "fourth_formatting": [],
-                    "fifth_formatting": [],
-                    "delimiter": ",",
-                    "target": {
-                        "type": "name",
-                        "value": "a"
-                    },
-                    "exception": {
-                        "type": "name",
-                        "value": "IOError",
-                    },
                     "value": [
+                        {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
                         {
-                            "type": "endl",
-                            "formatting": [],
-                            "value": "\n",
-                            "indent": "    "
+                            "type": "pass",
                         },
+                        {"type": "endl", "value": "\n", "formatting": [], "indent": ""},
+                    ],
+                },
+                "finally": {
+                    "type": "finally",
+                    "first_formatting": [],
+                    "second_formatting": [],
+                    "value": [
+                        {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
                         {
                             "type": "pass",
                         },
                         {
+                            "type": "endl",
+                            "value": "\n",
                             "formatting": [],
                             "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ]
-                }
-            ],
-            "value": [
-                {
-                    "type": "endl",
-                    "value": "\n",
-                    "formatting": [],
-                    "indent": "    "
+                        },
+                    ],
                 },
-                {
-                    "type": "pass",
-                },
-                {
-                    "formatting": [],
-                    "indent": "",
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+                "excepts": [
+                    {
+                        "type": "except",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [{"type": "space", "value": " "}],
+                        "fourth_formatting": [],
+                        "fifth_formatting": [],
+                        "delimiter": ",",
+                        "target": {"type": "name", "value": "a"},
+                        "exception": {
+                            "type": "name",
+                            "value": "IOError",
+                        },
+                        "value": [
+                            {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
+                    }
+                ],
+                "value": [
+                    {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                    {
+                        "type": "pass",
+                    },
+                    {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_try_except_comma_stmt_finally_indent():
@@ -1732,114 +1423,84 @@ def test_try_except_comma_stmt_finally_indent():
     finally:
         pass
     """
-    parse_multi([
-        ('TRY', 'try'),
-        ('COLON', ':', [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('EXCEPT', 'except', [], [('SPACE', ' ')]),
-        ('NAME', 'IOError'),
-        ('COMMA', ',', [], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('FINALLY', 'finally'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "try",
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [],
-            "else": {},
-            "finally": {
-                "type": "finally",
-                "first_formatting": [],
+    parse_multi(
+        [
+            ("TRY", "try"),
+            ("COLON", ":", [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("EXCEPT", "except", [], [("SPACE", " ")]),
+            ("NAME", "IOError"),
+            ("COMMA", ",", [], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("FINALLY", "finally"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "try",
+                "first_formatting": [{"type": "space", "value": " "}],
                 "second_formatting": [],
-                "value": [
-                    {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": "    "
-                    },
-                    {
-                        "type": "pass",
-                    },
-                    {
-                        "formatting": [],
-                        "indent": "",
-                        "type": "endl",
-                        "value": "\n"
-                    }
-                ],
-            },
-            "excepts": [
-                {
-                    "type": "except",
-                    "first_formatting": [{"type": "space", "value": " "}],
+                "else": {},
+                "finally": {
+                    "type": "finally",
+                    "first_formatting": [],
                     "second_formatting": [],
-                    "third_formatting": [{"type": "space", "value": " "}],
-                    "fourth_formatting": [],
-                    "fifth_formatting": [],
-                    "delimiter": ",",
-                    "target": {
-                        "type": "name",
-                        "value": "a"
-                    },
-                    "exception": {
-                        "type": "name",
-                        "value": "IOError",
-                    },
                     "value": [
-                        {
-                            "type": "endl",
-                            "formatting": [],
-                            "value": "\n",
-                            "indent": "    "
-                        },
+                        {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
                         {
                             "type": "pass",
                         },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ]
-                }
-            ],
-            "value": [
-                {
-                    "type": "endl",
-                    "formatting": [],
-                    "value": "\n",
-                    "indent": "    "
+                        {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                    ],
                 },
-                {
-                    "type": "pass",
-                },
-                {
-                    "formatting": [],
-                    "indent": "",
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+                "excepts": [
+                    {
+                        "type": "except",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [],
+                        "third_formatting": [{"type": "space", "value": " "}],
+                        "fourth_formatting": [],
+                        "fifth_formatting": [],
+                        "delimiter": ",",
+                        "target": {"type": "name", "value": "a"},
+                        "exception": {
+                            "type": "name",
+                            "value": "IOError",
+                        },
+                        "value": [
+                            {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
+                    }
+                ],
+                "value": [
+                    {"type": "endl", "formatting": [], "value": "\n", "indent": "    "},
+                    {
+                        "type": "pass",
+                    },
+                    {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_try_except_as_stmt_indent():
@@ -1849,86 +1510,66 @@ def test_try_except_as_stmt_indent():
     except IOError as e:
         pass
     """
-    parse_multi([
-        ('TRY', 'try'),
-        ('COLON', ':', [('SPACE', ' ')]),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('EXCEPT', 'except', [], [('SPACE', ' ')]),
-        ('NAME', 'IOError'),
-        ('AS', 'as', [('SPACE', ' ')], [('SPACE', ' ')]),
-        ('NAME', 'a'),
-        ('COLON', ':'),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "try",
-            "first_formatting": [{"type": "space", "value": " "}],
-            "second_formatting": [],
-            "else": {},
-            "finally": {},
-            "excepts": [
-                {
-                    "type": "except",
-                    "first_formatting": [{"type": "space", "value": " "}],
-                    "second_formatting": [{"type": "space", "value": " "}],
-                    "third_formatting": [{"type": "space", "value": " "}],
-                    "fourth_formatting": [],
-                    "fifth_formatting": [],
-                    "delimiter": "as",
-                    "target": {
-                        "type": "name",
-                        "value": "a"
-                    },
-                    "exception": {
-                        "type": "name",
-                        "value": "IOError",
-                    },
-                    "value": [
-                        {
-                            "type": "endl",
-                            "value": "\n",
-                            "formatting": [],
-                            "indent": "    "
+    parse_multi(
+        [
+            ("TRY", "try"),
+            ("COLON", ":", [("SPACE", " ")]),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("EXCEPT", "except", [], [("SPACE", " ")]),
+            ("NAME", "IOError"),
+            ("AS", "as", [("SPACE", " ")], [("SPACE", " ")]),
+            ("NAME", "a"),
+            ("COLON", ":"),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "try",
+                "first_formatting": [{"type": "space", "value": " "}],
+                "second_formatting": [],
+                "else": {},
+                "finally": {},
+                "excepts": [
+                    {
+                        "type": "except",
+                        "first_formatting": [{"type": "space", "value": " "}],
+                        "second_formatting": [{"type": "space", "value": " "}],
+                        "third_formatting": [{"type": "space", "value": " "}],
+                        "fourth_formatting": [],
+                        "fifth_formatting": [],
+                        "delimiter": "as",
+                        "target": {"type": "name", "value": "a"},
+                        "exception": {
+                            "type": "name",
+                            "value": "IOError",
                         },
-                        {
-                            "type": "pass",
-                        },
-                        {
-                            "formatting": [],
-                            "indent": "",
-                            "type": "endl",
-                            "value": "\n"
-                        }
-                    ]
-                }
-            ],
-            "value": [
-                {
-                    "type": "endl",
-                    "value": "\n",
-                    "formatting": [],
-                    "indent": "    "
-                },
-                {
-                    "type": "pass",
-                },
-                {
-                    "formatting": [],
-                    "indent": "",
-                    "type": "endl",
-                    "value": "\n"
-                }
-            ],
-        }
-    ])
+                        "value": [
+                            {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                        ],
+                    }
+                ],
+                "value": [
+                    {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                    {
+                        "type": "pass",
+                    },
+                    {"formatting": [], "indent": "", "type": "endl", "value": "\n"},
+                ],
+            }
+        ],
+    )
 
 
 def test_try_finally_leading_comment():
@@ -1939,81 +1580,60 @@ def test_try_finally_leading_comment():
     finally:
         pass
     """
-    parse_multi([
-        ('TRY', 'try'),
-        ('COLON', ':', []),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('COMMENT', '# comment'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('FINALLY', 'finally'),
-        ('COLON', ':', []),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "try",
-            "first_formatting": [],
-            "second_formatting": [],
-            "else": {},
-            "finally": {
-                "type": "finally",
+    parse_multi(
+        [
+            ("TRY", "try"),
+            ("COLON", ":", []),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("COMMENT", "# comment"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("FINALLY", "finally"),
+            ("COLON", ":", []),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "try",
                 "first_formatting": [],
                 "second_formatting": [],
+                "else": {},
+                "finally": {
+                    "type": "finally",
+                    "first_formatting": [],
+                    "second_formatting": [],
+                    "value": [
+                        {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                        {
+                            "type": "pass",
+                        },
+                        {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                    ],
+                },
+                "excepts": [],
                 "value": [
-                    {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": "    "
-                    },
+                    {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
                     {
                         "type": "pass",
                     },
+                    {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
                     {
-                        "indent": "",
+                        "type": "comment",
+                        "value": "# comment",
                         "formatting": [],
-                        "type": "endl",
-                        "value": "\n"
-                    }
+                    },
+                    {"type": "endl", "value": "\n", "formatting": [], "indent": ""},
                 ],
-            },
-            "excepts": [],
-            "value": [
-                {
-                    "type": "endl",
-                    "value": "\n",
-                    "formatting": [],
-                    "indent": "    "
-                },
-                {
-                    "type": "pass",
-                },
-                {
-                    "indent": "",
-                    "formatting": [],
-                    "type": "endl",
-                    "value": "\n"
-                },
-                {
-                    "type": "comment",
-                    "value": "# comment",
-                    "formatting": [],
-                }, {
-                    "type": "endl",
-                    "value": "\n",
-                    "formatting": [],
-                    "indent": ""
-                }
-            ],
-        }
-    ])
+            }
+        ],
+    )
 
 
 def test_try_except_leading_comment():
@@ -2024,85 +1644,65 @@ def test_try_except_leading_comment():
     except:
         pass
     """
-    parse_multi([
-        ('TRY', 'try'),
-        ('COLON', ':', []),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('COMMENT', '# comment'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-        ('EXCEPT', 'except'),
-        ('COLON', ':', []),
-        ('ENDL', '\n', [], [('SPACE', '    ')]),
-        ('INDENT', ''),
-        ('PASS', 'pass'),
-        ('ENDL', '\n'),
-        ('DEDENT', ''),
-    ], [
-        {
-            "type": "try",
-            "first_formatting": [],
-            "second_formatting": [],
-            "else": {},
-            "excepts": [{
-                "delimiter": "",
-                "type": "except",
-                "exception": {},
-                "target": {},
+    parse_multi(
+        [
+            ("TRY", "try"),
+            ("COLON", ":", []),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("COMMENT", "# comment"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+            ("EXCEPT", "except"),
+            ("COLON", ":", []),
+            ("ENDL", "\n", [], [("SPACE", "    ")]),
+            ("INDENT", ""),
+            ("PASS", "pass"),
+            ("ENDL", "\n"),
+            ("DEDENT", ""),
+        ],
+        [
+            {
+                "type": "try",
                 "first_formatting": [],
                 "second_formatting": [],
-                "third_formatting": [],
-                "fourth_formatting": [],
-                "fifth_formatting": [],
-                "value": [
+                "else": {},
+                "excepts": [
                     {
-                        "type": "endl",
-                        "value": "\n",
-                        "formatting": [],
-                        "indent": "    "
-                    },
+                        "delimiter": "",
+                        "type": "except",
+                        "exception": {},
+                        "target": {},
+                        "first_formatting": [],
+                        "second_formatting": [],
+                        "third_formatting": [],
+                        "fourth_formatting": [],
+                        "fifth_formatting": [],
+                        "value": [
+                            {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
+                            {
+                                "type": "pass",
+                            },
+                            {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
+                        ],
+                    }
+                ],
+                "finally": {},
+                "value": [
+                    {"type": "endl", "value": "\n", "formatting": [], "indent": "    "},
                     {
                         "type": "pass",
                     },
+                    {"indent": "", "formatting": [], "type": "endl", "value": "\n"},
                     {
-                        "indent": "",
+                        "type": "comment",
+                        "value": "# comment",
                         "formatting": [],
-                        "type": "endl",
-                        "value": "\n"
-                    }
+                    },
+                    {"type": "endl", "value": "\n", "formatting": [], "indent": ""},
                 ],
-            }],
-            "finally": {},
-            "value": [
-                {
-                    "type": "endl",
-                    "value": "\n",
-                    "formatting": [],
-                    "indent": "    "
-                },
-                {
-                    "type": "pass",
-                },
-                {
-                    "indent": "",
-                    "formatting": [],
-                    "type": "endl",
-                    "value": "\n"
-                },
-                {
-                    "type": "comment",
-                    "value": "# comment",
-                    "formatting": [],
-                },
-                {
-                    "type": "endl",
-                    "value": "\n",
-                    "formatting": [],
-                    "indent": ""
-                }
-            ],
-        }
-    ])
+            }
+        ],
+    )

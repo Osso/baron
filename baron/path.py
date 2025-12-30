@@ -1,6 +1,8 @@
-from .render import RenderWalker, child_by_key
-from .utils import is_newline, split_on_newlines, total_ordering
 from copy import deepcopy
+from functools import total_ordering
+
+from .render import RenderWalker, child_by_key
+from .utils import is_newline, split_on_newlines
 
 
 def position_to_path(tree, position):
@@ -45,15 +47,16 @@ def path_to_bounding_box(tree, path):
 
 
 @total_ordering
-class Position(object):
+class Position:
     """Handles a cursor's line and column
 
     Operations requiring another Position as argument can be given an
     indexable object of len >= 2 where the index 0 contains the line and
     the index 1 contains the column. For example a tuple of len 2.
     """
+
     def __init__(self, position):
-        if hasattr(position, 'line') and hasattr(position, 'column'):
+        if hasattr(position, "line") and hasattr(position, "column"):
             self.line = position.line
             self.column = position.column
         elif len(position) >= 2:
@@ -84,8 +87,7 @@ class Position(object):
     def __add__(self, other):
         """(1, 1) + (1, 1) -> (2, 2)"""
         other = Position(other)
-        return Position((self.line + other.line,
-                        self.column + other.column))
+        return Position((self.line + other.line, self.column + other.column))
 
     def __neg__(self):
         """(1, -1) -> (-1, 1)"""
@@ -94,8 +96,7 @@ class Position(object):
     def __sub__(self, other):
         """(1, 1) - (1, 1) -> (0, 0)"""
         other = Position(other)
-        return Position((self.line - other.line,
-                        self.column - other.column))
+        return Position((self.line - other.line, self.column - other.column))
 
     def __nonzero__(self):
         return self.line >= 0 and self.column >= 0
@@ -107,7 +108,7 @@ class Position(object):
         """Compares Positions or Position and tuple
 
         Will not fail if other is an unsupported type"""
-        if not (hasattr(other, 'line') and hasattr(other, 'column')) and len(other) < 2:
+        if not (hasattr(other, "line") and hasattr(other, "column")) and len(other) < 2:
             return False
 
         other = Position(other)
@@ -119,13 +120,13 @@ class Position(object):
         return (self.line, self.column) < (other.line, other.column)
 
     def __repr__(self):
-        return 'Position (%s, %s)' % (str(self.line), str(self.column))
+        return f"Position ({str(self.line)}, {str(self.column)})"
 
     def to_tuple(self):
         return (self.line, self.column)
 
 
-class BoundingBox(object):
+class BoundingBox:
     """Handles a selection's top_left and bottom_right position
 
     Operations requiring another BoundingBox as argument can be given an
@@ -133,8 +134,9 @@ class BoundingBox(object):
     position, either as a Position or an indexable object. The index
     1 must contain, in a similar manner, the bottom_right position.
     """
+
     def __init__(self, bounding_box):
-        if hasattr(bounding_box, 'top_left') and hasattr(bounding_box, 'bottom_right'):
+        if hasattr(bounding_box, "top_left") and hasattr(bounding_box, "bottom_right"):
             self.top_left = Position(bounding_box.top_left)
             self.bottom_right = Position(bounding_box.bottom_right)
         elif len(bounding_box) >= 2:
@@ -145,14 +147,14 @@ class BoundingBox(object):
 
     def __eq__(self, other):
         """Compares BoundingBox with BoundingBox or indexable object"""
-        if not (hasattr(other, 'top_left') and hasattr(other, 'bottom_right')) and len(other) < 2:
+        if not (hasattr(other, "top_left") and hasattr(other, "bottom_right")) and len(other) < 2:
             return False
 
         other = BoundingBox(other)
         return self.top_left == other.top_left and self.bottom_right == other.bottom_right
 
     def __repr__(self):
-        return 'BoundingBox (%s, %s)' % (str(self.top_left), str(self.bottom_right))
+        return f"BoundingBox ({str(self.top_left)}, {str(self.bottom_right)})"
 
 
 class PathWalker(RenderWalker):
@@ -161,19 +163,20 @@ class PathWalker(RenderWalker):
     It adds an attribute "current_path" which is updated each time the
     walker takes a step.
     """
+
     def walk(self, tree):
         self.current_path = []
 
-        super(PathWalker, self).walk(tree)
+        super().walk(tree)
 
     def before(self, key_type, item, render_key):
         if render_key is not None:
             self.current_path.append(render_key)
 
-        return super(PathWalker, self).before(key_type, item, render_key)
+        return super().before(key_type, item, render_key)
 
     def after(self, key_type, item, render_key):
-        stop = super(PathWalker, self).after(key_type, item, render_key)
+        stop = super().after(key_type, item, render_key)
 
         if render_key is not None:
             self.current_path.pop()
@@ -188,6 +191,7 @@ class PositionFinder(PathWalker):
     and column. When the targetted node is found, stop there and build
     the path while going back up the tree.
     """
+
     def find(self, tree, position):
         self.current = Position((1, 1))
         self.target = Position(position)
@@ -223,9 +227,11 @@ class PositionFinder(PathWalker):
     before_string = before_constant
 
     def is_on_targetted_node(self, advance_by):
-        return self.target.line == self.current.line \
-            and self.target.column >= self.current.column \
+        return (
+            self.target.line == self.current.line
+            and self.target.column >= self.current.column
             and self.target.column < self.current.column + advance_by
+        )
 
 
 class BoundingBoxFinder(PathWalker):
@@ -239,13 +245,14 @@ class BoundingBoxFinder(PathWalker):
     If no target path is given, assume the targetted node is the whole
     tree.
     """
+
     def compute(self, tree, target_path=None):
         self.target_path = target_path
         self.current_position = Position((1, 1))
         self.left_of_current_position = Position((1, 0))
         self.top_left = None
         self.bottom_right = None
-        self.found = True if self.target_path is None or len(target_path) == 0 else False
+        self.found = bool(self.target_path is None or len(target_path) == 0)
 
         self.walk(tree)
 
@@ -255,13 +262,13 @@ class BoundingBoxFinder(PathWalker):
         return BoundingBox((self.top_left, self.bottom_right))
 
     def before(self, key_type, item, render_key):
-        stop = super(BoundingBoxFinder, self).before(key_type, item, render_key)
+        stop = super().before(key_type, item, render_key)
 
         if self.current_path == self.target_path:
             self.found = True
             self.top_left = deepcopy(self.current_position)
 
-        if key_type not in ['constant', 'string']:
+        if key_type not in ["constant", "string"]:
             return stop
 
         newlines_split = split_on_newlines(item)
@@ -280,4 +287,4 @@ class BoundingBoxFinder(PathWalker):
         if self.bottom_right is None and self.found and self.current_path == self.target_path:
             self.bottom_right = deepcopy(self.left_of_current_position)
 
-        return super(BoundingBoxFinder, self).after(key_type, item, render_key)
+        return super().after(key_type, item, render_key)

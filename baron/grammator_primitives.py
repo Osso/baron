@@ -3,6 +3,7 @@ from .utils import create_node_from_token
 
 def include_primivites(pg, print_function):
     if not print_function:
+
         @pg.production("print_stmt : PRINT")
         def print_stmt_empty(pack):
             (print_,) = pack
@@ -19,7 +20,9 @@ def include_primivites(pg, print_function):
             (print_, testlist) = pack
             return {
                 "type": "print",
-                "value": testlist["value"] if testlist["type"] == "tuple" and testlist["with_parenthesis"] is False else [testlist],
+                "value": testlist["value"]
+                if testlist["type"] == "tuple" and testlist["with_parenthesis"] is False
+                else [testlist],
                 "destination": None,
                 "destination_formatting": [],
                 "formatting": print_.hidden_tokens_after,
@@ -39,11 +42,13 @@ def include_primivites(pg, print_function):
         @pg.production("print_stmt : PRINT RIGHT_SHIFT test COMMA testlist")
         def print_stmt_redirect_testlist(pack):
             (print_, right_shift, test, comma, testlist) = pack
-            value = [{
-                "type": "comma",
-                "first_formatting": comma.hidden_tokens_before,
-                "second_formatting": comma.hidden_tokens_after,
-            }]
+            value = [
+                {
+                    "type": "comma",
+                    "first_formatting": comma.hidden_tokens_before,
+                    "second_formatting": comma.hidden_tokens_after,
+                }
+            ]
             value += testlist["value"] if testlist["type"] == "tuple" else [testlist]
             return {
                 "type": "print",
@@ -65,7 +70,7 @@ def include_primivites(pg, print_function):
                 "second_formatting": [],
                 "third_formatting": [],
                 "fourth_formatting": [],
-                "fifth_formatting": []
+                "fifth_formatting": [],
             }
 
         @pg.production("assert_stmt : EXEC expr IN test")
@@ -80,7 +85,7 @@ def include_primivites(pg, print_function):
                 "second_formatting": in_.hidden_tokens_before,
                 "third_formatting": in_.hidden_tokens_after,
                 "fourth_formatting": [],
-                "fifth_formatting": []
+                "fifth_formatting": [],
             }
 
         @pg.production("assert_stmt : EXEC expr IN test COMMA test")
@@ -95,7 +100,7 @@ def include_primivites(pg, print_function):
                 "second_formatting": in_.hidden_tokens_before,
                 "third_formatting": in_.hidden_tokens_after,
                 "fourth_formatting": comma.hidden_tokens_before,
-                "fifth_formatting": comma.hidden_tokens_after
+                "fifth_formatting": comma.hidden_tokens_after,
             }
 
     @pg.production("flow_stmt : return_stmt")
@@ -221,7 +226,7 @@ def include_primivites(pg, print_function):
             "message": None,
             "first_formatting": assert_.hidden_tokens_after,
             "second_formatting": [],
-            "third_formatting": []
+            "third_formatting": [],
         }
 
     @pg.production("assert_stmt : ASSERT test COMMA test")
@@ -233,7 +238,7 @@ def include_primivites(pg, print_function):
             "message": test2,
             "first_formatting": assert_.hidden_tokens_after,
             "second_formatting": comma.hidden_tokens_before,
-            "third_formatting": comma.hidden_tokens_after
+            "third_formatting": comma.hidden_tokens_after,
         }
 
     @pg.production("global_stmt : GLOBAL names")
@@ -261,7 +266,11 @@ def include_primivites(pg, print_function):
 
     @pg.production("names : names comma name")
     def names_names_name(pack):
-        (names, comma, name,) = pack
+        (
+            names,
+            comma,
+            name,
+        ) = pack
         return names + [comma, name]
 
     @pg.production("return_stmt : RETURN testlist")
@@ -295,7 +304,7 @@ def include_primivites(pg, print_function):
             "first_formatting": lambda_.hidden_tokens_after,
             "second_formatting": colon.hidden_tokens_before,
             "third_formatting": colon.hidden_tokens_after,
-            "value": test
+            "value": test,
         }
 
     @pg.production("lambdef : LAMBDA parameters COLON test")
@@ -308,5 +317,5 @@ def include_primivites(pg, print_function):
             "first_formatting": lambda_.hidden_tokens_after,
             "second_formatting": colon.hidden_tokens_before,
             "third_formatting": colon.hidden_tokens_after,
-            "value": test
+            "value": test,
         }

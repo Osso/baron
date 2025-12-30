@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding:Utf-8 -*-
 
 from baron.grouper import group
 from baron.spliter import split
@@ -15,7 +14,7 @@ def test_empty():
 
 
 def test_one():
-    grouper_test('a', ['a'], ['a'])
+    grouper_test("a", ["a"], ["a"])
 
 
 def test_random():
@@ -35,7 +34,7 @@ def test_add_egual_double():
 
 
 def test_add_egual_random():
-    grouper_test(" qsd+=qsd", [' ', 'qsd', '+', '=', 'qsd'], [' ', 'qsd', '+=', 'qsd'])
+    grouper_test(" qsd+=qsd", [" ", "qsd", "+", "=", "qsd"], [" ", "qsd", "+=", "qsd"])
 
 
 def test_minus_egual():
@@ -148,85 +147,85 @@ def test_unicode_raw_string():
 
 
 def test_exponant():
-    grouper_test("1e+123", ['1e', '+', '123'], ['1e+123'])
-    grouper_test("1e-123", ['1e', '-', '123'], ['1e-123'])
-    grouper_test("1.1e+123", ['1', '.', '1e', '+', '123'], ['1.1e+123'])
-    grouper_test("1.1e-123", ['1', '.', '1e', '-', '123'], ['1.1e-123'])
-    grouper_test(".1e+123", ['.', '1e', '+', '123'], ['.1e+123'])
-    grouper_test(".1e-123", ['.', '1e', '-', '123'], ['.1e-123'])
+    grouper_test("1e+123", ["1e", "+", "123"], ["1e+123"])
+    grouper_test("1e-123", ["1e", "-", "123"], ["1e-123"])
+    grouper_test("1.1e+123", ["1", ".", "1e", "+", "123"], ["1.1e+123"])
+    grouper_test("1.1e-123", ["1", ".", "1e", "-", "123"], ["1.1e-123"])
+    grouper_test(".1e+123", [".", "1e", "+", "123"], [".1e+123"])
+    grouper_test(".1e-123", [".", "1e", "-", "123"], [".1e-123"])
 
 
 def test_endl_with_backslash():
-    grouper_test("\\\n", ['\\', '\n'], ['\\\n'])
+    grouper_test("\\\n", ["\\", "\n"], ["\\\n"])
 
 
 def test_space_endl_with_backslash():
-    grouper_test(" 	 \\\n   ", [' 	 ', '\\', '\n', '   '], [' 	 \\\n   '])
-    grouper_test(" 	 \\\npouet", [' 	 ', '\\', '\n', 'pouet'], [' 	 \\\n', 'pouet'])
+    grouper_test(" 	 \\\n   ", [" 	 ", "\\", "\n", "   "], [" 	 \\\n   "])
+    grouper_test(" 	 \\\npouet", [" 	 ", "\\", "\n", "pouet"], [" 	 \\\n", "pouet"])
 
 
 def test_number_with_backslash():
-    grouper_test("3\\\n", ['3', '\\', '\n'], ['3', '\\\n'])
+    grouper_test("3\\\n", ["3", "\\", "\n"], ["3", "\\\n"])
 
 
 def test_regression():
-    grouper_test("0x045e: ", ['0x045e', ':', ' '], ['0x045e', ':', ' '])
-    grouper_test("180.\n", ['180', '.', '\n'], ['180.', '\n'])
+    grouper_test("0x045e: ", ["0x045e", ":", " "], ["0x045e", ":", " "])
+    grouper_test("180.\n", ["180", ".", "\n"], ["180.", "\n"])
 
 
 def test_backslash_window_endl():
-    grouper_test("\\\r\n", ['\\', '\r', '\n'], ['\\\r\n'])
+    grouper_test("\\\r\n", ["\\", "\r", "\n"], ["\\\r\n"])
 
 
 def test_regression_float():
-    grouper_test('1.', ['1', '.'], ['1.'])
-    grouper_test('.1', ['.', '1'], ['.1'])
-    grouper_test('1.1', ['1', '.', '1'], ['1.1'])
-    grouper_test('7.629e-6', ['7', '.', '629e', '-', '6'], ['7.629e-6'])
+    grouper_test("1.", ["1", "."], ["1."])
+    grouper_test(".1", [".", "1"], [".1"])
+    grouper_test("1.1", ["1", ".", "1"], ["1.1"])
+    grouper_test("7.629e-6", ["7", ".", "629e", "-", "6"], ["7.629e-6"])
 
 
 def test_complex():
-    grouper_test(".1j", ['.', '1j'], ['.1j'])
-    grouper_test(".1J", ['.', '1J'], ['.1J'])
-    grouper_test("1.j", ['1', '.', 'j'], ['1.j'])
-    grouper_test("1.J", ['1', '.', 'J'], ['1.J'])
-    grouper_test("1.1j", ['1', '.', '1j'], ['1.1j'])
-    grouper_test("1.1J", ['1', '.', '1J'], ['1.1J'])
-    grouper_test("1J", ['1J'], ['1J'])
-    grouper_test("1e-1j", ['1e', '-', '1j'], ['1e-1j'])
-    grouper_test("1e1j", ['1e1j'], ['1e1j'])
+    grouper_test(".1j", [".", "1j"], [".1j"])
+    grouper_test(".1J", [".", "1J"], [".1J"])
+    grouper_test("1.j", ["1", ".", "j"], ["1.j"])
+    grouper_test("1.J", ["1", ".", "J"], ["1.J"])
+    grouper_test("1.1j", ["1", ".", "1j"], ["1.1j"])
+    grouper_test("1.1J", ["1", ".", "1J"], ["1.1J"])
+    grouper_test("1J", ["1J"], ["1J"])
+    grouper_test("1e-1j", ["1e", "-", "1j"], ["1e-1j"])
+    grouper_test("1e1j", ["1e1j"], ["1e1j"])
 
 
 def test_float_exponant():
-    grouper_test("1E1", ['1E1'], ['1E1'])
-    grouper_test("1E-2", ['1E', '-', '2'], ['1E-2'])
-    grouper_test("1E+2", ['1E', '+', '2'], ['1E+2'])
-    grouper_test("1.E+2", ['1', '.', 'E', '+', '2'], ['1.E+2'])
-    grouper_test("1.E-2", ['1', '.', 'E', '-', '2'], ['1.E-2'])
-    grouper_test("1.E2", ['1', '.', 'E2'], ['1.E2'])
-    grouper_test("1e1", ['1e1'], ['1e1'])
-    grouper_test("1e-2", ['1e', '-', '2'], ['1e-2'])
-    grouper_test("1e+2", ['1e', '+', '2'], ['1e+2'])
-    grouper_test("1.e+2", ['1', '.', 'e', '+', '2'], ['1.e+2'])
-    grouper_test("1.e-2", ['1', '.', 'e', '-', '2'], ['1.e-2'])
-    grouper_test("1.e2", ['1', '.', 'e2'], ['1.e2'])
-    grouper_test(".3e55", ['.', '3e55'], ['.3e55'])
+    grouper_test("1E1", ["1E1"], ["1E1"])
+    grouper_test("1E-2", ["1E", "-", "2"], ["1E-2"])
+    grouper_test("1E+2", ["1E", "+", "2"], ["1E+2"])
+    grouper_test("1.E+2", ["1", ".", "E", "+", "2"], ["1.E+2"])
+    grouper_test("1.E-2", ["1", ".", "E", "-", "2"], ["1.E-2"])
+    grouper_test("1.E2", ["1", ".", "E2"], ["1.E2"])
+    grouper_test("1e1", ["1e1"], ["1e1"])
+    grouper_test("1e-2", ["1e", "-", "2"], ["1e-2"])
+    grouper_test("1e+2", ["1e", "+", "2"], ["1e+2"])
+    grouper_test("1.e+2", ["1", ".", "e", "+", "2"], ["1.e+2"])
+    grouper_test("1.e-2", ["1", ".", "e", "-", "2"], ["1.e-2"])
+    grouper_test("1.e2", ["1", ".", "e2"], ["1.e2"])
+    grouper_test(".3e55", [".", "3e55"], [".3e55"])
 
 
 def test_float_with_underscores():
-    grouper_test(".098_765", ['.', '098_765'], ['.098_765'])
-    grouper_test("123.098_765", ['123', '.', '098_765'], ['123.098_765'])
-    grouper_test("123_456.098", ['123_456', '.', '098'], ['123_456.098'])
-    grouper_test("123_456.098_765", ['123_456', '.', '098_765'], ['123_456.098_765'])
+    grouper_test(".098_765", [".", "098_765"], [".098_765"])
+    grouper_test("123.098_765", ["123", ".", "098_765"], ["123.098_765"])
+    grouper_test("123_456.098", ["123_456", ".", "098"], ["123_456.098"])
+    grouper_test("123_456.098_765", ["123_456", ".", "098_765"], ["123_456.098_765"])
 
 
 def test_arrow():
-    grouper_test("->", ['-', '>'], ['->'])
+    grouper_test("->", ["-", ">"], ["->"])
 
 
 def test_dot_dot():
-    grouper_test("..", ['.', '.'], ['.', '.'])
+    grouper_test("..", [".", "."], [".", "."])
 
 
 def test_dot_dot_dot():
-    grouper_test("...", ['.', '.', '.'], ['...'])
+    grouper_test("...", [".", ".", "."], ["..."])

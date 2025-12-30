@@ -1,7 +1,7 @@
 #!/usr/bin/python
-# -*- coding:Utf-8 -*-
 
 import baron
+
 from .test_utils import check_dumps
 
 
@@ -289,6 +289,20 @@ def test_try_except_finally_else():
     check_dumps("try : pass\nexcept Exception : pass\nelse: pouet\nfinally : pass\n")
 
 
+def test_try_except_star():
+    check_dumps("try : pass\nexcept* Exception : pass\n")
+    check_dumps("try : pass\nexcept * Exception : pass\n")
+
+
+def test_try_except_star_as():
+    check_dumps("try : pass\nexcept* Exception   as   e : pass\n")
+    check_dumps("try : pass\nexcept *  ExceptionGroup  as  eg : pass\n")
+
+
+def test_try_multiple_except_star():
+    check_dumps("try : pass\nexcept* ValueError : pass\nexcept* TypeError : pass\n")
+
+
 def test_comment():
     check_dumps("# pouet")
 
@@ -349,6 +363,12 @@ def test_ternary_operator():
     check_dumps("a   if        b  else      c")
 
 
+def test_named_expr():
+    check_dumps("(x   :=    1)")
+    check_dumps("(x := y + 1)")
+    check_dumps("[y := 1, y**2]")
+
+
 def test_yield_empty():
     check_dumps("yield")
 
@@ -363,6 +383,11 @@ def test_decorator():
 
 def test_decorator_call():
     check_dumps("@pouet('pouet')\ndef a(): pass\n")
+
+
+def test_decorator_with_empty_line():
+    # iPython style: empty lines between decorators
+    check_dumps("@decorator1\n\n@decorator2\ndef a(): pass\n")
 
 
 def test_class():
@@ -546,6 +571,17 @@ def test_float_exponant():
     check_dumps("1e9")
 
 
+def test_float_exponant_complex():
+    check_dumps("1e9j")
+    check_dumps("1.5e9j")
+
+
+def test_long():
+    # Python 2 long literals (still parsed for compatibility)
+    check_dumps("123L")
+    check_dumps("123l")
+
+
 def test_semicolon():
     check_dumps("a;b")
 
@@ -631,12 +667,19 @@ def test_single_object():
 
 
 def test_crash_issue_85():
-    check_dumps('d*e-1\n')
+    check_dumps("d*e-1\n")
 
 
 def test_keyword_only_marker():
     check_dumps("def foo(a, *, b, c):    pass\n")
     check_dumps("def foo(a, *  , b, c):    pass\n")
+
+
+def test_positional_only_marker():
+    check_dumps("def foo(a, b, /):    pass\n")
+    check_dumps("def foo(a, b  , /):    pass\n")
+    check_dumps("def foo(a, b, /, c, d):    pass\n")
+    check_dumps("def foo(a, /, b, *, c):    pass\n")
 
 
 def test_float_with_underscores():

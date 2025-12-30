@@ -1,14 +1,16 @@
 # flake8: noqa
 
 from baron.baron import parse
-from baron.path import (BoundingBox,
-                        PathWalker,
-                        Position,
-                        node_to_bounding_box,
-                        path_to_bounding_box,
-                        path_to_node,
-                        position_to_node,
-                        position_to_path)
+from baron.path import (
+    BoundingBox,
+    PathWalker,
+    Position,
+    node_to_bounding_box,
+    path_to_bounding_box,
+    path_to_node,
+    position_to_node,
+    position_to_path,
+)
 from baron.utils import string_instance
 
 
@@ -122,16 +124,17 @@ class PathWalkerTester(PathWalker):
       * '<' for calling the `after` method, i.e. going up the tree
     and the second is what the current path should be at that step.
     """
+
     def __init__(self, paths):
         super(PathWalkerTester, self).__init__(strict=True)
         self.paths = paths
 
     def before(self, *args):
         super(PathWalkerTester, self).before(*args)
-        self.process_test('>')
+        self.process_test(">")
 
     def after(self, *args):
-        self.process_test('<')
+        self.process_test("<")
         super(PathWalkerTester, self).after(*args)
 
     def process_test(self, node_type):
@@ -164,32 +167,34 @@ def check_path(code, positions, target_path):
 def test_path_walker_assignment():
     node = parse("a = 1")
     # Indentation is purely visual sugar
-    walker = PathWalkerTester([
-        ('>', [0]),
-        ('>', [0, 'target']),
-        ('>', [0, 'target', 'value']),
-        ('<', [0, 'target', 'value']),
-        ('<', [0, 'target']),
-        ('>', [0, 'first_formatting']),
-        ('>', [0, 'first_formatting', 0]),
-        ('>', [0, 'first_formatting', 0, 'value']),
-        ('<', [0, 'first_formatting', 0, 'value']),
-        ('<', [0, 'first_formatting', 0]),
-        ('<', [0, 'first_formatting']),
-        ('>', [0, '=']),
-        ('<', [0, '=']),
-        ('>', [0, 'second_formatting']),
-        ('>', [0, 'second_formatting', 0]),
-        ('>', [0, 'second_formatting', 0, 'value']),
-        ('<', [0, 'second_formatting', 0, 'value']),
-        ('<', [0, 'second_formatting', 0]),
-        ('<', [0, 'second_formatting']),
-        ('>', [0, 'value']),
-        ('>', [0, 'value', 'value']),
-        ('<', [0, 'value', 'value']),
-        ('<', [0, 'value']),
-        ('<', [0]),
-    ])
+    walker = PathWalkerTester(
+        [
+            (">", [0]),
+            (">", [0, "target"]),
+            (">", [0, "target", "value"]),
+            ("<", [0, "target", "value"]),
+            ("<", [0, "target"]),
+            (">", [0, "first_formatting"]),
+            (">", [0, "first_formatting", 0]),
+            (">", [0, "first_formatting", 0, "value"]),
+            ("<", [0, "first_formatting", 0, "value"]),
+            ("<", [0, "first_formatting", 0]),
+            ("<", [0, "first_formatting"]),
+            (">", [0, "="]),
+            ("<", [0, "="]),
+            (">", [0, "second_formatting"]),
+            (">", [0, "second_formatting", 0]),
+            (">", [0, "second_formatting", 0, "value"]),
+            ("<", [0, "second_formatting", 0, "value"]),
+            ("<", [0, "second_formatting", 0]),
+            ("<", [0, "second_formatting"]),
+            (">", [0, "value"]),
+            (">", [0, "value", "value"]),
+            ("<", [0, "value", "value"]),
+            ("<", [0, "value"]),
+            ("<", [0]),
+        ]
+    )
 
     walker.walk(node)
 
@@ -200,7 +205,7 @@ def test_bb_name():
 
 
 def test_bb_string():
-    node = parse("\"hello\"")[0]
+    node = parse('"hello"')[0]
     assert path_to_bounding_box(node, []) == ((1, 1), (1, 7))
 
 
@@ -594,7 +599,7 @@ def test_position_equality():
 
 
 def test_position_opposite():
-    assert Position((1, 2)) == - Position((-1, -2))
+    assert Position((1, 2)) == -Position((-1, -2))
 
 
 def test_position_arithmetic():

@@ -1,5 +1,6 @@
 import string
-from .utils import FlexibleIterator, BaronError
+
+from .utils import BaronError, FlexibleIterator
 
 
 def split(sequence):
@@ -31,7 +32,7 @@ def split_generator(sequence):
                 result = next(iterator)
                 result += next(iterator)
                 result += next(iterator)
-                result += iterator.grab_string(lambda iterator: not iterator.next_starts_with(section * 3))
+                result += iterator.grab_string(lambda iterator, s=section: not iterator.next_starts_with(s * 3))
                 # This next() call can fail if no closing quote exists. We
                 # still want to yield so we catch it.
                 try:
@@ -44,7 +45,7 @@ def split_generator(sequence):
             elif iterator.next_in(section):
                 not_found = False
                 result = next(iterator)
-                result += iterator.grab_string(lambda iterator: iterator.show_next() not in section)
+                result += iterator.grab_string(lambda iterator, s=section: iterator.show_next() not in s)
                 # This next() call can fail if no closing quote exists. We
                 # still want to yield so we catch it.
                 try:
@@ -56,7 +57,7 @@ def split_generator(sequence):
         for section in (string.ascii_letters + "_" + "1234567890", " \t"):
             if iterator.next_in(section):
                 not_found = False
-                yield iterator.grab(lambda iterator: iterator.show_next() in section)
+                yield iterator.grab(lambda iterator, s=section: iterator.show_next() in s)
 
         for one in "@,.;()=*:+-/^%&<>|\r\n~[]{}!``\\":
             if iterator.next_in(one):
@@ -73,4 +74,4 @@ def split_generator(sequence):
             next(iterator)
 
         if not_found:
-            raise UntreatedError("Untreated elements: %s" % iterator.rest_of_the_sequence().__repr__()[:50])
+            raise UntreatedError(f"Untreated elements: {iterator.rest_of_the_sequence().__repr__()[:50]}")

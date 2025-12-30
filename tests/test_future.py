@@ -1,6 +1,7 @@
-from baron.future import has_print_function, replace_print_by_name
-from baron.baron import parse, tokenize
 import json
+
+from baron.baron import parse, tokenize
+from baron.future import has_print_function, replace_print_by_name
 
 
 def print_token_is_a_function(code):
@@ -9,8 +10,7 @@ def print_token_is_a_function(code):
 
 def print_is_parsed_as_a_function(parsed_code):
     code_json = json.dumps(parsed_code)
-    return '"type": "name", "value": "print"' in code_json \
-           or '"value": "print", "type": "name"' in code_json
+    return '"type": "name", "value": "print"' in code_json or '"value": "print", "type": "name"' in code_json
 
 
 def test_no_future():
@@ -90,6 +90,12 @@ def test_print_as_print():
 
 
 def test_replace_print_token():
-    tokens = [('PRINT', 'print'), ('LEFT_PARENTHESIS', '('), ('NAME', 'A'), ('RIGHT_PARENTHESIS', ')'), ('ENDMARKER', '')]
-    after = [('NAME', 'print'), ('LEFT_PARENTHESIS', '('), ('NAME', 'A'), ('RIGHT_PARENTHESIS', ')'), ('ENDMARKER', '')]
+    tokens = [
+        ("PRINT", "print"),
+        ("LEFT_PARENTHESIS", "("),
+        ("NAME", "A"),
+        ("RIGHT_PARENTHESIS", ")"),
+        ("ENDMARKER", ""),
+    ]
+    after = [("NAME", "print"), ("LEFT_PARENTHESIS", "("), ("NAME", "A"), ("RIGHT_PARENTHESIS", ")"), ("ENDMARKER", "")]
     assert after == replace_print_by_name(tokens)

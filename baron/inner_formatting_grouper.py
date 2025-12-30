@@ -1,4 +1,4 @@
-from .utils import FlexibleIterator, BaronError
+from .utils import BaronError, FlexibleIterator
 
 
 class UnExpectedFormattingToken(BaronError):
@@ -11,7 +11,6 @@ class GroupingError(BaronError):
 
 GROUP_THOSE = (
     "ENDL",
-
     # TODO test those 2
     "COMMENT",
     "SPACE",
@@ -30,71 +29,74 @@ QUIT_GROUPING_MODE = (
 )
 
 GROUP_ON = (
-    "COMMA",
-    "COLON",
-
-    # TODO test everything bellow
-    "STRING",
-    "RAW_STRING",
-    "INTERPOLATED_STRING",
-    "INTERPOLATED_RAW_STRING",
-    "BINARY_STRING",
-    "BINARY_RAW_STRING",
-    "UNICODE_STRING",
-    "UNICODE_RAW_STRING",
-
-    "AS",
-    "IMPORT",
-    "DOUBLE_STAR",
-    "DOT",
-    "LEFT_SQUARE_BRACKET",
-    "STAR",
-    "SLASH",
-    "PERCENT",
-    "DOUBLE_SLASH",
-    "PLUS",
-    "MINUS",
-    "LEFT_SHIFT",
-    "RIGHT_SHIFT",
-    "AMPER",
-    "CIRCUMFLEX",
-    "VBAR",
-    "LESS",
-    "GREATER",
-    "EQUAL_EQUAL",
-    "LESS_EQUAL",
-    "GREATER_EQUAL",
-    "NOT_EQUAL",
-    "IN",
-    "IS",
-    "NOT",
-    "AND",
-    "OR",
-    "AT",
-    "IF",
-    "ELSE",
-    "FROM",
-    "EQUAL",
-    "PLUS_EQUAL",
-    "MINUS_EQUAL",
-    "AT_EQUAL",
-    "STAR_EQUAL",
-    "SLASH_EQUAL",
-    "PERCENT_EQUAL",
-    "AMPER_EQUAL",
-    "VBAR_EQUAL",
-    "CIRCUMFLEX_EQUAL",
-    "LEFT_SHIFT_EQUAL",
-    "RIGHT_SHIFT_EQUAL",
-    "DOUBLE_STAR_EQUAL",
-    "DOUBLE_SLASH_EQUAL",
-    "ENDL",
-    "FOR",
-    "COLON",
-    "RAW_STRING",
-    "UNICODE_STRING",
-    "UNICODE_RAW_STRING",
-) + ENTER_GROUPING_MODE + QUIT_GROUPING_MODE
+    (
+        "COMMA",
+        "COLON",
+        # TODO test everything bellow
+        "STRING",
+        "RAW_STRING",
+        "INTERPOLATED_STRING",
+        "INTERPOLATED_RAW_STRING",
+        "BINARY_STRING",
+        "BINARY_RAW_STRING",
+        "UNICODE_STRING",
+        "UNICODE_RAW_STRING",
+        "AS",
+        "IMPORT",
+        "DOUBLE_STAR",
+        "DOT",
+        "LEFT_SQUARE_BRACKET",
+        "STAR",
+        "SLASH",
+        "PERCENT",
+        "DOUBLE_SLASH",
+        "PLUS",
+        "MINUS",
+        "LEFT_SHIFT",
+        "RIGHT_SHIFT",
+        "AMPER",
+        "CIRCUMFLEX",
+        "VBAR",
+        "LESS",
+        "GREATER",
+        "EQUAL_EQUAL",
+        "LESS_EQUAL",
+        "GREATER_EQUAL",
+        "NOT_EQUAL",
+        "IN",
+        "IS",
+        "NOT",
+        "AND",
+        "OR",
+        "AT",
+        "IF",
+        "ELSE",
+        "FROM",
+        "EQUAL",
+        "PLUS_EQUAL",
+        "MINUS_EQUAL",
+        "AT_EQUAL",
+        "STAR_EQUAL",
+        "SLASH_EQUAL",
+        "PERCENT_EQUAL",
+        "AMPER_EQUAL",
+        "VBAR_EQUAL",
+        "CIRCUMFLEX_EQUAL",
+        "LEFT_SHIFT_EQUAL",
+        "RIGHT_SHIFT_EQUAL",
+        "DOUBLE_STAR_EQUAL",
+        "DOUBLE_SLASH_EQUAL",
+        "COLON_EQUAL",
+        "ENDL",
+        "FOR",
+        "COLON",
+        "RAW_STRING",
+        "UNICODE_STRING",
+        "UNICODE_RAW_STRING",
+    )
+    + ENTER_GROUPING_MODE
+    + QUIT_GROUPING_MODE
+)
 
 
 def append_to_token_after(token, to_append_list):
@@ -126,15 +128,19 @@ def fail_on_bad_token(token, debug_file_content, in_grouping_mode):
     debug_file_content += _append_to_debug_file_content(token)
 
     debug_file_content = debug_file_content.split("\n")
-    debug_file_content = list(zip(range(1, len(debug_file_content) + 1), debug_file_content))
+    debug_file_content = list(zip(range(1, len(debug_file_content) + 1), debug_file_content, strict=False))
     debug_file_content = debug_file_content[-8:]
-    debug_file_content = "\n".join(["%4s %s" % (x[0], x[1]) for x in debug_file_content])
-    raise GroupingError("Fail to group formatting tokens, here:\n%s <----\n\n'%s' should have been in: %s\n\nCurrent value of 'in_grouping_mode': %s" % (debug_file_content, token, ', '.join(sorted(GROUP_ON)), in_grouping_mode))
+    debug_file_content = "\n".join([f"{x[0]:4} {x[1]}" for x in debug_file_content])
+    raise GroupingError(
+        "Fail to group formatting tokens, here:\n{} <----\n\n'{}' should have been in: {}\n\nCurrent value of 'in_grouping_mode': {}".format(
+            debug_file_content, token, ", ".join(sorted(GROUP_ON)), in_grouping_mode
+        )
+    )
 
 
 def _append_to_debug_file_content(token):
-    before_debug = "".join(map(lambda x: x[1], token[2] if len(token) >= 3 else []))
-    after_debug = "".join(map(lambda x: x[1], token[3] if len(token) >= 4 else []))
+    before_debug = "".join(x[1] for x in (token[2] if len(token) >= 3 else []))
+    after_debug = "".join(x[1] for x in (token[3] if len(token) >= 4 else []))
     return before_debug + token[1] + after_debug
 
 

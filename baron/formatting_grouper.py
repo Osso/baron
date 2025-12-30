@@ -1,4 +1,4 @@
-from .utils import FlexibleIterator, BaronError
+from .utils import BaronError, FlexibleIterator
 
 
 class UnExpectedSpaceToken(BaronError):
@@ -77,10 +77,14 @@ STRING = (
     "BINARY_RAW_STRING",
 )
 
-GROUP_SPACE_BEFORE = BOTH + (
-    "RIGHT_PARENTHESIS",
-    "COMMENT",
-) + STRING
+GROUP_SPACE_BEFORE = (
+    BOTH
+    + (
+        "RIGHT_PARENTHESIS",
+        "COMMENT",
+    )
+    + STRING
+)
 
 GROUP_SPACE_AFTER = BOTH + (
     "TILDE",
@@ -131,10 +135,14 @@ def group_generator(sequence):
             new_current = next(iterator)
             current = (new_current[0], new_current[1], [current])
 
-        if current[0] in GROUP_SPACE_AFTER + STRING and\
-            (iterator.show_next() and iterator.show_next()[0] == "SPACE") and\
-                (not iterator.show_next(2) or (iterator.show_next(2) and not less_prioritary_than(current[0], iterator.show_next(2)[0]))):
-
+        if (
+            current[0] in GROUP_SPACE_AFTER + STRING
+            and (iterator.show_next() and iterator.show_next()[0] == "SPACE")
+            and (
+                not iterator.show_next(2)
+                or (iterator.show_next(2) and not less_prioritary_than(current[0], iterator.show_next(2)[0]))
+            )
+        ):
             # do not be greedy when you are grouping on strings
             if current[0] in STRING and iterator.show_next(2) and iterator.show_next(2)[0] in GROUP_SPACE_BEFORE:
                 yield current
@@ -147,6 +155,11 @@ def group_generator(sequence):
         # not really happy about this solution but that avoid a broken release
         if current[0] == "COLON" and iterator.show_next() and iterator.show_next()[0] == "COMMENT":
             comment = next(iterator)
-            current = (current[0], current[1], ((current[2]) if len(current) > 2 else []), ((current[3]) if len(current) > 3 else []) + [comment])
+            current = (
+                current[0],
+                current[1],
+                ((current[2]) if len(current) > 2 else []),
+                ((current[3]) if len(current) > 3 else []) + [comment],
+            )
 
         yield current

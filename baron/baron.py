@@ -1,13 +1,12 @@
-from .spliter import split
-from .grouper import group
-from .tokenizer import tokenize as _tokenize
 from .formatting_grouper import group as space_group
 from .future import has_print_function, replace_print_by_name
 from .grammator import generate_parse
+from .grouper import group
 from .indentation_marker import mark_indentation
 from .inner_formatting_grouper import group as inner_group
 from .parser import ParsingError
-
+from .spliter import split
+from .tokenizer import tokenize as _tokenize
 
 parse_tokens = generate_parse(False)
 parse_tokens_print_function = generate_parse(True)
@@ -22,14 +21,17 @@ def _parse(tokens, print_function):
             # swap parsers for print_function situation where I failed to find it
             parser = parse_tokens if print_function else parse_tokens_print_function
             return parser(tokens)
-    except ParsingError as e:
+    except ParsingError:
         raise
     except Exception as e:
         import sys
         import traceback
+
         traceback.print_exc(file=sys.stderr)
-        sys.stderr.write("%s\n" % e)
-        sys.stderr.write("\nBaron has failed to parse this input. If this is valid python code (and by that I mean that the python binary successfully parse this code without any syntax error) (also consider that python does not yet parse python 3 code integrally) it would be kind if you can extract a snippet of your code that make Baron fails and open a bug here: https://github.com/PyCQA/baron/issues\n\nSorry for the inconvenience.")
+        sys.stderr.write(f"{e}\n")
+        sys.stderr.write(
+            "\nBaron has failed to parse this input. If this is valid python code (and by that I mean that the python binary successfully parse this code without any syntax error) (also consider that python does not yet parse python 3 code integrally) it would be kind if you can extract a snippet of your code that make Baron fails and open a bug here: https://github.com/PyCQA/baron/issues\n\nSorry for the inconvenience."
+        )
 
 
 def parse(source_code, print_function=None):

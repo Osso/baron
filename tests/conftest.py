@@ -1,5 +1,5 @@
-import os
 import json
+import os
 
 
 def pytest_assertrepr_compare(config, op, left, right):

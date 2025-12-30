@@ -15,7 +15,7 @@ def include_imports(pg):
             "type": "import",
             "value": dotted_as_names,
             "first_formatting": import_.hidden_tokens_before,
-            "second_formatting": import_.hidden_tokens_after
+            "second_formatting": import_.hidden_tokens_after,
         }
 
     @pg.production("from_import : FROM dotted_name IMPORT from_import_target")
@@ -27,7 +27,7 @@ def include_imports(pg):
             "first_formatting": from_.hidden_tokens_after,
             "second_formatting": import_.hidden_tokens_before,
             "third_formatting": import_.hidden_tokens_after,
-            "value": dotted_name
+            "value": dotted_name,
         }
 
     @pg.production("from_import_target : name_as_names")
@@ -38,23 +38,27 @@ def include_imports(pg):
     @pg.production("from_import_target : LEFT_PARENTHESIS name_as_names RIGHT_PARENTHESIS")
     def from_import_parenthesis(pack):
         (left_parenthesis, name_as_names, right_parenthesis) = pack
-        return left_parenthesis.hidden_tokens_before +\
-            [{"type": "left_parenthesis", "value": "("}] +\
-            left_parenthesis.hidden_tokens_after +\
-            name_as_names +\
-            right_parenthesis.hidden_tokens_before +\
-            [{"type": "right_parenthesis", "value": ")"}] +\
-            right_parenthesis.hidden_tokens_after
+        return (
+            left_parenthesis.hidden_tokens_before
+            + [{"type": "left_parenthesis", "value": "("}]
+            + left_parenthesis.hidden_tokens_after
+            + name_as_names
+            + right_parenthesis.hidden_tokens_before
+            + [{"type": "right_parenthesis", "value": ")"}]
+            + right_parenthesis.hidden_tokens_after
+        )
 
     @pg.production("from_import_target : STAR")
     def from_import_star(pack):
         (star,) = pack
-        return [{
-            "type": "star",
-            "value": "*",
-            "first_formatting": star.hidden_tokens_before,
-            "second_formatting": star.hidden_tokens_after
-        }]
+        return [
+            {
+                "type": "star",
+                "value": "*",
+                "first_formatting": star.hidden_tokens_before,
+                "second_formatting": star.hidden_tokens_after,
+            }
+        ]
 
     @pg.production("name_as_names : name_as_names name_as_name")
     def name_as_names_name_as_name(pack):
@@ -69,35 +73,35 @@ def include_imports(pg):
     @pg.production("name_as_name : NAME AS NAME")
     def name_as_name_name_as_name(pack):
         (name, as_, name2) = pack
-        return [{
-            "type": "name_as_name",
-            "value": name.value,
-            "first_formatting": as_.hidden_tokens_before,
-            "second_formatting": as_.hidden_tokens_after,
-            "target": name2.value
-        }]
+        return [
+            {
+                "type": "name_as_name",
+                "value": name.value,
+                "first_formatting": as_.hidden_tokens_before,
+                "second_formatting": as_.hidden_tokens_after,
+                "target": name2.value,
+            }
+        ]
 
     @pg.production("name_as_name : NAME")
     def name_as_name_name(pack):
         (name,) = pack
-        return [{
-            "type": "name_as_name",
-            "value": name.value,
-            "target": "",
-            "first_formatting": [],
-            "second_formatting": []
-        }]
+        return [
+            {"type": "name_as_name", "value": name.value, "target": "", "first_formatting": [], "second_formatting": []}
+        ]
 
     @pg.production("name_as_name : NAME SPACE")
     def name_as_name_name_space(pack):
         (name, space) = pack
-        return [{
-            "type": "name_as_name",
-            "target": None,
-            "value": name.value,
-            "first_formatting": [],
-            "second_formatting": []
-        }] + [create_node_from_token(space)]
+        return [
+            {
+                "type": "name_as_name",
+                "target": None,
+                "value": name.value,
+                "first_formatting": [],
+                "second_formatting": [],
+            }
+        ] + [create_node_from_token(space)]
 
     @pg.production("name_as_name : comma")
     def name_as_name_comma_space(pack):
@@ -117,24 +121,28 @@ def include_imports(pg):
     @pg.production("dotted_as_name : dotted_name AS NAME")
     def dotted_as_name_as(pack):
         (dotted_name, as_, name) = pack
-        return [{
-            "type": "dotted_as_name",
-            "value": dotted_name,
-            "first_formatting": as_.hidden_tokens_before,
-            "second_formatting": as_.hidden_tokens_after,
-            "target": name.value,
-        }]
+        return [
+            {
+                "type": "dotted_as_name",
+                "value": dotted_name,
+                "first_formatting": as_.hidden_tokens_before,
+                "second_formatting": as_.hidden_tokens_after,
+                "target": name.value,
+            }
+        ]
 
     @pg.production("dotted_as_name : dotted_name")
     def dotted_as_name(pack):
         (dotted_name,) = pack
-        return [{
-            "type": "dotted_as_name",
-            "value": dotted_name,
-            "first_formatting": [],
-            "second_formatting": [],
-            "target": ""
-        }]
+        return [
+            {
+                "type": "dotted_as_name",
+                "value": dotted_name,
+                "first_formatting": [],
+                "second_formatting": [],
+                "target": "",
+            }
+        ]
 
     @pg.production("dotted_name : dotted_name dotted_name_element")
     def dotted_name_elements_element(pack):
@@ -155,17 +163,21 @@ def include_imports(pg):
     @pg.production("dotted_name_element : DOT")
     def dotted_name_dot(pack):
         (dot,) = pack
-        return [{
-            "type": "dot",
-            "first_formatting": dot.hidden_tokens_before,
-            "second_formatting": dot.hidden_tokens_after,
-        }]
+        return [
+            {
+                "type": "dot",
+                "first_formatting": dot.hidden_tokens_before,
+                "second_formatting": dot.hidden_tokens_after,
+            }
+        ]
 
     @pg.production("dotted_name_element : ELLIPSIS")
     def dotted_name_dot_dot_dot(pack):
         ellipsis = pack[0]
-        return [{
-            "type": "ellipsis",
-            "first_formatting": ellipsis.hidden_tokens_before,
-            "second_formatting": ellipsis.hidden_tokens_after,
-        }]
+        return [
+            {
+                "type": "ellipsis",
+                "first_formatting": ellipsis.hidden_tokens_before,
+                "second_formatting": ellipsis.hidden_tokens_after,
+            }
+        ]

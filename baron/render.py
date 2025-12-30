@@ -216,6 +216,19 @@ nodes_rendering_order = {
         ("key",        "second",            True),  # noqa
     ],
 
+    "named_expr": [
+        ("string",     "target",            True),  # noqa
+        ("formatting", "first_formatting",  True),  # noqa
+        ("constant",   ":=",                True),  # noqa
+        ("formatting", "second_formatting", True),  # noqa
+        ("key",        "value",             True),  # noqa
+    ],
+
+    "positional_only_marker": [
+        ("constant",   "/",                 True),  # noqa
+        ("formatting", "formatting",        True),  # noqa
+    ],
+
     "ellipsis": [
         ("constant",   ".",                 True),  # noqa
         ("formatting", "first_formatting",  True),  # noqa
@@ -735,6 +748,22 @@ nodes_rendering_order = {
         ("formatting", "fourth_formatting", True),  # noqa
         ("constant",   ":",                 True),  # noqa
         ("formatting", "fifth_formatting",  True),  # noqa
+        ("list",       "value",             True),  # noqa
+    ],
+
+    "except_star": [
+        ("constant",   "except",            True),  # noqa
+        ("formatting", "first_formatting",  True),  # noqa
+        ("constant",   "*",                 True),  # noqa
+        ("formatting", "second_formatting", True),  # noqa
+        ("key",        "exception",         True),  # noqa
+        ("formatting", "third_formatting",  "target"),  # noqa
+        ("constant",   "as",                "target"),  # noqa
+        ("formatting", "fourth_formatting", "target"),  # noqa
+        ("key",        "target",            "target"),  # noqa
+        ("formatting", "fifth_formatting",  True),  # noqa
+        ("constant",   ":",                 True),  # noqa
+        ("formatting", "sixth_formatting",  True),  # noqa
         ("list",       "value",             True),  # noqa
     ],
 

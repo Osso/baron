@@ -2,7 +2,11 @@ def include_data_structures(pg):
     # TODO remove left_parenthesis and use LEFT_PARENTHESIS instead
     @pg.production("atom : left_parenthesis testlist_comp RIGHT_PARENTHESIS")
     def tuple(pack):
-        (left_parenthesis, testlist_comp, right_parenthesis,) = pack
+        (
+            left_parenthesis,
+            testlist_comp,
+            right_parenthesis,
+        ) = pack
         return {
             "type": "tuple",
             "value": testlist_comp,
@@ -15,14 +19,18 @@ def include_data_structures(pg):
 
     @pg.production("atom : left_parenthesis test RIGHT_PARENTHESIS")
     def associative_parenthesis(pack):
-        (left_parenthesis, test, right_parenthesis,) = pack
+        (
+            left_parenthesis,
+            test,
+            right_parenthesis,
+        ) = pack
         return {
             "type": "associative_parenthesis",
             "first_formatting": left_parenthesis.hidden_tokens_before,
             "second_formatting": left_parenthesis.hidden_tokens_after,
             "third_formatting": right_parenthesis.hidden_tokens_before,
             "fourth_formatting": right_parenthesis.hidden_tokens_after,
-            "value": test
+            "value": test,
         }
 
     @pg.production("testlist : test comma")
@@ -63,11 +71,14 @@ def include_data_structures(pg):
     @pg.production("subscriptlist_part : COMMA subscript")
     def testlist_part(pack):
         (comma, test) = pack
-        return [{
-            "type": "comma",
-            "first_formatting": comma.hidden_tokens_before,
-            "second_formatting": comma.hidden_tokens_after,
-        }, test]
+        return [
+            {
+                "type": "comma",
+                "first_formatting": comma.hidden_tokens_before,
+                "second_formatting": comma.hidden_tokens_after,
+            },
+            test,
+        ]
 
     @pg.production("testlist_part : COMMA test COMMA")
     @pg.production("testlist_star_expr_part : COMMA test_or_star_expr COMMA")
@@ -75,15 +86,19 @@ def include_data_structures(pg):
     @pg.production("subscriptlist_part : COMMA subscript COMMA")
     def testlist_part_comma(pack):
         (comma, test, comma2) = pack
-        return [{
-            "type": "comma",
-            "first_formatting": comma.hidden_tokens_before,
-            "second_formatting": comma.hidden_tokens_after,
-        }, test, {
-            "type": "comma",
-            "first_formatting": comma2.hidden_tokens_before,
-            "second_formatting": comma2.hidden_tokens_after,
-        }]
+        return [
+            {
+                "type": "comma",
+                "first_formatting": comma.hidden_tokens_before,
+                "second_formatting": comma.hidden_tokens_after,
+            },
+            test,
+            {
+                "type": "comma",
+                "first_formatting": comma2.hidden_tokens_before,
+                "second_formatting": comma2.hidden_tokens_after,
+            },
+        ]
 
     @pg.production("testlist_part : COMMA test testlist_part")
     @pg.production("testlist_star_expr_part : COMMA test_or_star_expr testlist_star_expr_part")
@@ -91,11 +106,14 @@ def include_data_structures(pg):
     @pg.production("subscriptlist_part : COMMA subscript subscriptlist_part")
     def testlist_part_next(pack):
         (comma, test, testlist_part) = pack
-        return [{
-            "type": "comma",
-            "first_formatting": comma.hidden_tokens_before,
-            "second_formatting": comma.hidden_tokens_after,
-        }, test] + testlist_part
+        return [
+            {
+                "type": "comma",
+                "first_formatting": comma.hidden_tokens_before,
+                "second_formatting": comma.hidden_tokens_after,
+            },
+            test,
+        ] + testlist_part
 
     @pg.production("testlist_comp :")
     def testlist_comp_empty(empty):
@@ -113,14 +131,18 @@ def include_data_structures(pg):
 
     @pg.production("atom : LEFT_SQUARE_BRACKET listmaker RIGHT_SQUARE_BRACKET")
     def list_(pack):
-        (left_bracket, listmaker, right_bracket,) = pack
+        (
+            left_bracket,
+            listmaker,
+            right_bracket,
+        ) = pack
         return {
             "type": "list",
             "first_formatting": left_bracket.hidden_tokens_before,
             "second_formatting": left_bracket.hidden_tokens_after,
             "third_formatting": right_bracket.hidden_tokens_before,
             "fourth_formatting": right_bracket.hidden_tokens_after,
-            "value": listmaker
+            "value": listmaker,
         }
 
     @pg.production("listmaker :")
@@ -139,14 +161,18 @@ def include_data_structures(pg):
 
     @pg.production("atom : LEFT_BRACKET dictmaker RIGHT_BRACKET")
     def dict(pack):
-        (left_bracket, dictmaker, right_bracket,) = pack
+        (
+            left_bracket,
+            dictmaker,
+            right_bracket,
+        ) = pack
         return {
             "type": "dict",
             "first_formatting": left_bracket.hidden_tokens_before,
             "second_formatting": left_bracket.hidden_tokens_after,
             "third_formatting": right_bracket.hidden_tokens_before,
             "fourth_formatting": right_bracket.hidden_tokens_after,
-            "value": dictmaker
+            "value": dictmaker,
         }
 
     @pg.production("dictmaker : ")
@@ -156,35 +182,44 @@ def include_data_structures(pg):
     @pg.production("dictmaker : test COLON test")
     def dict_one(pack):
         (test, colon, test2) = pack
-        return [{
-            "first_formatting": colon.hidden_tokens_before,
-            "second_formatting": colon.hidden_tokens_after,
-            "key": test,
-            "value": test2,
-            "type": "dictitem"
-        }]
+        return [
+            {
+                "first_formatting": colon.hidden_tokens_before,
+                "second_formatting": colon.hidden_tokens_after,
+                "key": test,
+                "value": test2,
+                "type": "dictitem",
+            }
+        ]
 
     @pg.production("dictmaker : test COLON test comma dictmaker")
     def dict_more(pack):
         (test, colon, test2, comma, dictmaker) = pack
-        return [{
-            "first_formatting": colon.hidden_tokens_before,
-            "second_formatting": colon.hidden_tokens_after,
-            "key": test,
-            "value": test2,
-            "type": "dictitem"
-        }, comma] + dictmaker
+        return [
+            {
+                "first_formatting": colon.hidden_tokens_before,
+                "second_formatting": colon.hidden_tokens_after,
+                "key": test,
+                "value": test2,
+                "type": "dictitem",
+            },
+            comma,
+        ] + dictmaker
 
     @pg.production("atom : LEFT_BRACKET setmaker RIGHT_BRACKET")
     def set(pack):
-        (left_bracket, setmaker, right_bracket,) = pack
+        (
+            left_bracket,
+            setmaker,
+            right_bracket,
+        ) = pack
         return {
             "type": "set",
             "first_formatting": left_bracket.hidden_tokens_before,
             "second_formatting": left_bracket.hidden_tokens_after,
             "third_formatting": right_bracket.hidden_tokens_before,
             "fourth_formatting": right_bracket.hidden_tokens_after,
-            "value": setmaker
+            "value": setmaker,
         }
 
     @pg.production("setmaker : ")
@@ -203,7 +238,12 @@ def include_data_structures(pg):
 
     @pg.production("atom : left_parenthesis test comp_for RIGHT_PARENTHESIS")
     def generator_comprehension(pack):
-        (left_parenthesis, test, comp_for, right_parenthesis,) = pack
+        (
+            left_parenthesis,
+            test,
+            comp_for,
+            right_parenthesis,
+        ) = pack
         return {
             "type": "generator_comprehension",
             "first_formatting": left_parenthesis.hidden_tokens_before,
@@ -263,39 +303,43 @@ def include_data_structures(pg):
     @pg.production("comp_for : FOR exprlist IN or_test")
     def comp_for(pack):
         (for_, exprlist, in_, or_test) = pack
-        return [{
-            "type": "comprehension_loop",
-            "first_formatting": for_.hidden_tokens_before,
-            "second_formatting": for_.hidden_tokens_after,
-            "third_formatting": in_.hidden_tokens_before,
-            "fourth_formatting": in_.hidden_tokens_after,
-            "target": or_test,
-            "iterator": exprlist,
-            "ifs": [],
-        }]
+        return [
+            {
+                "type": "comprehension_loop",
+                "first_formatting": for_.hidden_tokens_before,
+                "second_formatting": for_.hidden_tokens_after,
+                "third_formatting": in_.hidden_tokens_before,
+                "fourth_formatting": in_.hidden_tokens_after,
+                "target": or_test,
+                "iterator": exprlist,
+                "ifs": [],
+            }
+        ]
 
     @pg.production("list_for : FOR exprlist IN old_test")
     @pg.production("list_for : FOR exprlist IN testlist_safe")
     def comp_for_implicite_tuple(pack):
         (for_, exprlist, in_, testlist_safe) = pack
-        return [{
-            "type": "comprehension_loop",
-            "first_formatting": for_.hidden_tokens_before,
-            "second_formatting": for_.hidden_tokens_after,
-            "third_formatting": in_.hidden_tokens_before,
-            "fourth_formatting": in_.hidden_tokens_after,
-            "target": {
-                "type": "tuple",
-                "value": testlist_safe,
-                "with_parenthesis": False,
-                "first_formatting": [],
-                "second_formatting": [],
-                "third_formatting": [],
-                "fourth_formatting": [],
-            },
-            "iterator": exprlist,
-            "ifs": [],
-        }]
+        return [
+            {
+                "type": "comprehension_loop",
+                "first_formatting": for_.hidden_tokens_before,
+                "second_formatting": for_.hidden_tokens_after,
+                "third_formatting": in_.hidden_tokens_before,
+                "fourth_formatting": in_.hidden_tokens_after,
+                "target": {
+                    "type": "tuple",
+                    "value": testlist_safe,
+                    "with_parenthesis": False,
+                    "first_formatting": [],
+                    "second_formatting": [],
+                    "third_formatting": [],
+                    "fourth_formatting": [],
+                },
+                "iterator": exprlist,
+                "ifs": [],
+            }
+        ]
 
     @pg.production("comp_for : FOR exprlist IN or_test comp_iter")
     @pg.production("list_for : FOR exprlist IN old_test list_iter")
@@ -309,16 +353,18 @@ def include_data_structures(pg):
             my_ifs.append(i)
             comp_iter = comp_iter[1:]
 
-        return [{
-            "type": "comprehension_loop",
-            "first_formatting": for_.hidden_tokens_before,
-            "second_formatting": for_.hidden_tokens_after,
-            "third_formatting": in_.hidden_tokens_before,
-            "fourth_formatting": in_.hidden_tokens_after,
-            "target": or_test,
-            "iterator": exprlist,
-            "ifs": my_ifs,
-        }] + comp_iter
+        return [
+            {
+                "type": "comprehension_loop",
+                "first_formatting": for_.hidden_tokens_before,
+                "second_formatting": for_.hidden_tokens_after,
+                "third_formatting": in_.hidden_tokens_before,
+                "fourth_formatting": in_.hidden_tokens_after,
+                "target": or_test,
+                "iterator": exprlist,
+                "ifs": my_ifs,
+            }
+        ] + comp_iter
 
     @pg.production("list_iter : list_for")
     @pg.production("comp_iter : comp_for")
@@ -330,20 +376,24 @@ def include_data_structures(pg):
     @pg.production("comp_iter : IF old_test")
     def comp_iter_if(pack):
         (if_, old_test) = pack
-        return [{
-            "type": "comprehension_if",
-            "first_formatting": if_.hidden_tokens_before,
-            "second_formatting": if_.hidden_tokens_after,
-            "value": old_test
-        }]
+        return [
+            {
+                "type": "comprehension_if",
+                "first_formatting": if_.hidden_tokens_before,
+                "second_formatting": if_.hidden_tokens_after,
+                "value": old_test,
+            }
+        ]
 
     @pg.production("list_iter : IF old_test list_iter")
     @pg.production("comp_iter : IF old_test comp_iter")
     def comp_iter_if_comp_iter(pack):
         (if_, old_test, comp_iter) = pack
-        return [{
-            "type": "comprehension_if",
-            "first_formatting": if_.hidden_tokens_before,
-            "second_formatting": if_.hidden_tokens_after,
-            "value": old_test
-        }] + comp_iter
+        return [
+            {
+                "type": "comprehension_if",
+                "first_formatting": if_.hidden_tokens_before,
+                "second_formatting": if_.hidden_tokens_after,
+                "value": old_test,
+            }
+        ] + comp_iter
