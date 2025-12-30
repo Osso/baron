@@ -32,17 +32,19 @@ Let's first see the difference between the two functions:
 
 .. ipython:: python
 
+    import json
     from baron import parse
     from baron.path import position_to_node, position_to_path
-    from baron.helpers import show_node
 
-    some_code = """from baron import parse\nfrom baron.helpers import show_node\nfst = parse("a = 1")\nshow_node(fst)"""
-    print some_code
+    some_code = """from baron import parse
+    fst = parse("a = 1")
+    print(fst)"""
+    print(some_code)
 
     tree = parse(some_code)
 
     node = position_to_node(tree, (3, 8))
-    show_node(node)
+    print(json.dumps(node, indent=4))
     path = position_to_path(tree, (3, 8))
     path
 
@@ -54,7 +56,7 @@ take the 0th index in the resulting ListNode:
 
 .. ipython:: python
 
-    show_node(tree[4]["value"]["value"][0])
+    print(json.dumps(tree[4]["value"]["value"][0], indent=4))
 
 Neat. This is so common that there is a function to do that:
 
@@ -62,7 +64,7 @@ Neat. This is so common that there is a function to do that:
 
     from baron.path import path_to_node
 
-    show_node(path_to_node(tree, path))
+    print(json.dumps(path_to_node(tree, path), indent=4))
 
 With the two above, that's a total of three functions to locate a node.
 
@@ -111,27 +113,27 @@ Examples are worth a thousand words so:
     fst = parse("a(1)\nb(2)")
 
     fst
-    print dumps(fst)
+    print(dumps(fst))
     node_to_bounding_box(fst)
     path_to_bounding_box(fst, [])
 
     fst[0]
-    print dumps(fst[0])
+    print(dumps(fst[0]))
     node_to_bounding_box(fst[0])
     path_to_bounding_box(fst, [0])
 
     fst[0]["value"]
-    print dumps(fst[0]["value"])
+    print(dumps(fst[0]["value"]))
     node_to_bounding_box(fst[1])
     path_to_bounding_box(fst, [1])
 
     fst[0]["value"][1]
-    print dumps(fst[0]["value"][1])
+    print(dumps(fst[0]["value"][1]))
     node_to_bounding_box(fst[0]["value"][1])
     path_to_bounding_box(fst, [0, "value", 1])
 
     fst[0]["value"][1]["value"]
-    print dumps(fst[0]["value"][1]["value"])
+    print(dumps(fst[0]["value"][1]["value"]))
     node_to_bounding_box(fst[0]["value"][1]["value"])
     path_to_bounding_box(fst, [0, "value", 1, "value"])
 

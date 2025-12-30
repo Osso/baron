@@ -16,13 +16,13 @@ rendered and the nature of those components.
 
 .. ipython:: python
 
+    import json
     from baron import nodes_rendering_order, parse
-    from baron.helpers import show_node
 
     nodes_rendering_order["name"]
-    show_node(parse("a_name")[0])
+    print(json.dumps(parse("a_name")[0], indent=4))
     nodes_rendering_order["tuple"]
-    show_node(parse("(a_name,another_name,yet_another_name)")[0])
+    print(json.dumps(parse("(a_name,another_name,yet_another_name)")[0], indent=4))
     nodes_rendering_order["comma"]
 
 For a "name" node, it is a list containing a unique component stored in a tuple
@@ -151,7 +151,7 @@ For reference, the FST of the lambda node:
 
 .. ipython:: python
 
-    show_node(fst[0])
+    print(json.dumps(fst[0], indent=4))
 
 Dependent rendering
 ~~~~~~~~~~~~~~~~~~~
@@ -207,7 +207,7 @@ RenderWalker Helper
 
 But even easier, Baron provides a walker class whose job is to walk the
 fst while rendering it and to call user-provided callbacks at each step:
- 
+
 .. autoclass:: baron.render.RenderWalker
 
 Internally, Baron uses the :file:`RenderWalker` for multiple tasks like
@@ -273,4 +273,3 @@ specified above, that is:
   the :file:`self.path` attribute.
 * Calling :file:`super().after()` should be done after your code using
   the :file:`self.path` attribute.
-

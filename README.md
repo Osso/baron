@@ -1,26 +1,27 @@
-Introduction
-============
+# Baron
 
 Baron is a Full Syntax Tree (FST) library for Python. By opposition to an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) which
 drops some syntax information in the process of its creation (like empty lines,
 comments, formatting), a FST keeps everything and guarantees the operation
-<code>fst\_to\_code(code\_to\_fst(source\_code)) == source\_code</code>.
+`fst_to_code(code_to_fst(source_code)) == source_code`.
 
-Roadmap
-=======
+## Requirements
 
-Current roadmap is as boring as needed:
+- Python 3.12 or later
 
-* bug fixs
-* new small features (walker pattern, maybe code generation) and performance improvement.
+## Installation
 
-Installation
-============
+```bash
+pip install baron
+```
 
-    pip install baron
+Or with uv:
 
-Basic Usage
-===========
+```bash
+uv add baron
+```
+
+## Basic Usage
 
 ```python
 from baron import parse, dumps
@@ -35,51 +36,36 @@ directly**. Think of Baron as the "bytecode of python source code" and RedBaron
 as some sort of usable layer on top of it.
 
 If you don't know what Baron is or don't understand yet why it might be
-useful for you, read the [« Why is this important? » section](#why-is-this-important).
+useful for you, read the [« Why is this important? » section](#why-is-this-important).
 
-Documentation
-=============
+## Supported Python Syntax
+
+Baron supports Python 3.12+ syntax including:
+
+- Walrus operator `:=` (PEP 572)
+- Positional-only parameters `/` (PEP 570)
+- Exception groups `except*` (PEP 654)
+- f-strings
+- async/await
+- Type annotations
+
+## Documentation
 
 Baron documentation is available on [Read The Docs](http://baron.readthedocs.io/en/latest/).
 
-Contributing
-============
+## Contributing
 
 If you want to implement new grammar elements for newer python versions, here
 are the documented steps for that:
 https://github.com/PyCQA/redbaron/blob/master/add_new_grammar.md
 
 Also note that reviewing most grammar modifications takes several hours of
-advanced focusing (we can't really afford bugs here) so don't despair if you PR
+advanced focusing (we can't really afford bugs here) so don't despair if your PR
 seems to be hanging around, sorry for that :/
 
 And thanks in advance for your work!
 
-Financial support
-=================
-
-Baron and RedBaron are a very advanced piece of engineering that requires a lot
-of time of concentration to work on. Until the end of 2018, the development
-has been a full volunteer work mostly done by [Bram](https://github.com/psycojoker),
-but now, to reach the next level and bring those projects to the stability and
-quality you expect, we need your support.
-
-You can join our contributors and sponsors on our transparent
-[OpenCollective](https://opencollective.com/redbaron), every contribution will
-count and will be mainly used to work on the projects stability and quality but
-also on continuing, on the side, the R&D side of those projects.
-
-Our supporters
---------------
-
-
-[![badge with number of supporters at tier I like this, keep going!](https://opencollective.com/redbaron/tiers/i-like-this,-keep-going!/badge.svg)
-![badge with number of supporters at tier it looks cool!](https://opencollective.com/redbaron/tiers/it-looks-cool!/badge.svg)
-![badge with number of supporters at tier Oh god, that saved me so much time!](https://opencollective.com/redbaron/tiers/oh-god,-that-saved-me-so-much-time!/badge.svg)](https://opencollective.com/redbaron/tiers/)
-
-
-Why is this important?
-======================
+## Why is this important?
 
 The usage of a FST might not be obvious at first sight so let's consider a
 series of problems to illustrate it. Let's say that you want to write a program that will:
@@ -94,7 +80,7 @@ series of problems to illustrate it. Let's say that you want to write a program 
 * implement the class browser of smalltalk for python (the whole one where you can edit the code of the methods, not just showing code)
 
 It is very likely that you will end up with the awkward feeling of writing
-clumpsy weak code that is very likely to break because you didn't thought about
+clumsy weak code that is very likely to break because you didn't think about
 all the annoying special cases and the formatting keeps bothering you. You may
 end up playing with [ast.py](https://docs.python.org/3/library/ast.html) until
 you realize that it removes too much information to be suitable for those
@@ -109,20 +95,18 @@ representation of your code, modifying it and converting it back to a string
 will give you back your code only modified where you have modified the tree.
 
 Said in another way, what I'm trying to achieve with Baron is a paradigm change in
-which writing code that will modify code is now a realist task that is worth
+which writing code that will modify code is now a realistic task that is worth
 the price (I'm not saying a simple task, but a realistic one: it's still a
 complex task).
 
-Other
------
+### Other
 
-Having a FST (or at least a good abstraction build on it) also makes it easier
+Having a FST (or at least a good abstraction built on it) also makes it easier
 to do code generation and code analysis while those two operations are already
-quite feasible (using [ast.py](https://docs.python.org/3/library/ast.html) 
+quite feasible (using [ast.py](https://docs.python.org/3/library/ast.html)
 and a templating engine for example).
 
-Some technical details
-======================
+## Some technical details
 
 Baron produces a FST in the form of JSON (and by JSON I mean Python lists
 and dicts that can be dumped into JSON) for maximum interoperability.
@@ -131,37 +115,27 @@ Baron FST is quite similar to Python AST with some modifications to be more
 intuitive to humans, since Python AST has been made for CPython interpreter.
 
 Since playing directly with JSON is a bit raw I'm going to build an abstraction
-on top of it that will looks like BeautifulSoup/jQuery.
+on top of it that will look like BeautifulSoup/jQuery.
 
-State of the project
-====================
+## State of the project
 
-Currently, Baron has been tested on the top 100 projects and the FST converts
-back exactly into the original source code. So, it can be considered quite
-stable, but it is far away from having been battle tested.
+Baron has been tested extensively and the FST converts back exactly into the
+original source code. It can be considered stable for production use.
 
-Since the project is very young and no one is already using it except my
-project, I'm open to changes of the FST nodes but I will quickly become
-conservative once it gets some adoption and will probably accept to
-modify it only once or twice in the future with clear indications on how to
-migrate.
+## Tests
 
-Baron is supporting python 2 grammar and up to python 3.7 grammar.
+Run tests with pytest:
 
-Tests
-=====
-Run either `py.test tests/` or `nosetests` in the baron directory.
+```bash
+pytest tests/
+```
 
-Community
-=========
+Or with coverage:
 
-You can reach us on [irc.freenode.net#baron](https://webchat.freenode.net/?channels=%23baron) or [irc.freenode.net##python-code-quality](https://webchat.freenode.net/?channels=%23%23python-code-quality).
+```bash
+pytest tests/ --cov=baron
+```
 
-Code of Conduct
-===============
+## Code of Conduct
 
 As a member of [PyCQA](https://github.com/PyCQA), Baron follows its [Code of Conduct](http://meta.pycqa.org/en/latest/code-of-conduct.html).
-
-Misc
-====
-[Old blog post announcing the project.](http://worlddomination.be/blog/2013/the-baron-project-part-1-what-and-why.html) Not that much up to date.

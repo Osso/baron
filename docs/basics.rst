@@ -36,48 +36,18 @@ the formatting is respected:
     dumps(parse("a   =   1"))
 
 
-Helpers
--------
+Exploring the FST
+-----------------
 
-Baron also provides 3 helper functions `show`, `show_file` and
-`show_node` to explore the FST (in iPython for example). Those functions
-will print a formatted version of the FST so you can play with it to
-explore the FST and have an idea of what you are playing with.
-
-Show
-~~~~
-:file:`show` is used directly on a string:
+The FST is a JSON-serializable data structure. You can use Python's
+built-in :file:`json` module to pretty-print it for exploration:
 
 .. ipython:: python
 
-    from baron.helpers import show
-
-    show("a = 1")
-
-    show("a +=  b")
-
-Show_file
-~~~~~~~~~
-:file:`show_file` is used on a file path:
-
-::
-
-    from baron.helpers import show_file
-
-    show_file("/path/to/a/file")
-
-Show_node
-~~~~~~~~~
-:file:`show_node` is used on an already parsed string:
-
-.. ipython:: python
-
-    from baron.helpers import show_node
+    import json
 
     fst = parse("a = 1")
+    print(json.dumps(fst, indent=4))
 
-    show_node(fst)
-
-Under the hood, the FST is serialized into JSON so the helpers are
-simply encapsulating JSON pretty printers.
-
+    fst = parse("a +=  b")
+    print(json.dumps(fst, indent=4))
