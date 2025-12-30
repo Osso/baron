@@ -803,6 +803,43 @@ nodes_rendering_order = {
         ("string",     "name",              True),  # noqa
     ],
 
+    # PEP 634 - Pattern Matching
+    "match": [
+        ("constant",   "match",             True),  # noqa
+        ("formatting", "first_formatting",  True),  # noqa
+        ("key",        "subject",           True),  # noqa
+        ("formatting", "second_formatting", True),  # noqa
+        ("constant",   ":",                 True),  # noqa
+        ("formatting", "third_formatting",  True),  # noqa
+        ("list",       "cases",             True),  # noqa
+    ],
+
+    "case": [
+        ("constant",   "case",              True),  # noqa
+        ("formatting", "first_formatting",  True),  # noqa
+        ("key",        "pattern",           True),  # noqa
+        ("formatting", "second_formatting", "guard"),  # noqa
+        ("constant",   "if",                "guard"),  # noqa
+        ("formatting", "third_formatting",  "guard"),  # noqa
+        ("key",        "guard",             "guard"),  # noqa
+        ("formatting", "fourth_formatting", True),  # noqa
+        ("constant",   ":",                 True),  # noqa
+        ("formatting", "fifth_formatting",  True),  # noqa
+        ("list",       "value",             True),  # noqa
+    ],
+
+    "pattern_as": [
+        ("key",        "pattern",           True),  # noqa
+        ("formatting", "first_formatting",  True),  # noqa
+        ("constant",   "as",                True),  # noqa
+        ("formatting", "second_formatting", True),  # noqa
+        ("string",     "name",              True),  # noqa
+    ],
+
+    "pattern_or": [
+        ("list",       "patterns",          True),  # noqa
+    ],
+
     "finally": [
         ("constant",   "finally",           True),  # noqa
         ("formatting", "first_formatting",  True),  # noqa

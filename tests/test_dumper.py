@@ -742,3 +742,41 @@ def test_classdef_type_params_with_bound():
 # because 'type' is a soft keyword that conflicts with existing grammar rules.
 # def test_type_alias():
 #     check_dumps("type Point = tuple[float, float]")
+
+
+# PEP 634 - Pattern Matching
+
+def test_match_simple():
+    check_dumps("match x:\n    case 1:\n        pass\n")
+
+
+def test_match_multiple_cases():
+    check_dumps("match x:\n    case 1:\n        a\n    case 2:\n        b\n")
+
+
+def test_match_with_guard():
+    check_dumps("match x:\n    case n if n > 0:\n        pass\n")
+
+
+def test_match_wildcard():
+    check_dumps("match x:\n    case _:\n        pass\n")
+
+
+def test_match_or_pattern():
+    check_dumps("match x:\n    case 1 | 2:\n        pass\n")
+
+
+def test_match_as_pattern():
+    check_dumps("match x:\n    case [a, b] as pair:\n        pass\n")
+
+
+def test_match_sequence_pattern():
+    check_dumps("match x:\n    case [a, b, c]:\n        pass\n")
+
+
+def test_match_mapping_pattern():
+    check_dumps('match x:\n    case {"key": value}:\n        pass\n')
+
+
+def test_match_class_pattern():
+    check_dumps("match x:\n    case Point(x=0, y=0):\n        pass\n")

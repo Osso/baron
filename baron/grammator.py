@@ -106,6 +106,7 @@ def generate_parse(print_function):
 
     @pg.production("statement : simple_stmt")
     @pg.production("statement : compound_stmt")
+    @pg.production("statement : case_stmt")
     def statement_simple_statement(pack):
         (stmt,) = pack
         return stmt
@@ -153,6 +154,7 @@ def generate_parse(print_function):
     @pg.production("compound_stmt : with_stmt")
     @pg.production("compound_stmt : decorated")
     @pg.production("compound_stmt : async_stmt")
+    @pg.production("compound_stmt : match_stmt")
     def small_and_compound_stmt(pack):
         (statement,) = pack
         return statement

@@ -352,3 +352,99 @@ def include_control_structures(pg):
                 "third_formatting": colon.hidden_tokens_after,
             }] + elifs + [else_stmt]
         }]
+
+    # PEP 634 - Pattern Matching
+    @pg.production("match_stmt : MATCH test COLON suite")
+    def match_stmt(pack):
+        (match, subject, colon, cases) = pack
+        return [{
+            "type": "match",
+            "subject": subject,
+            "cases": cases,
+            "first_formatting": match.hidden_tokens_after,
+            "second_formatting": colon.hidden_tokens_before,
+            "third_formatting": colon.hidden_tokens_after,
+        }]
+
+    @pg.production("case_stmt : CASE pattern COLON suite")
+    def case_stmt(pack):
+        (case, pattern, colon, suite) = pack
+        return [{
+            "type": "case",
+            "pattern": pattern,
+            "guard": {},
+            "first_formatting": case.hidden_tokens_after,
+            "second_formatting": colon.hidden_tokens_before,
+            "third_formatting": colon.hidden_tokens_after,
+            "fourth_formatting": [],
+            "fifth_formatting": [],
+            "value": suite,
+        }]
+
+    @pg.production("case_stmt : CASE pattern IF test COLON suite")
+    def case_guard_stmt(pack):
+        (case, pattern, if_, guard, colon, suite) = pack
+        return [{
+            "type": "case",
+            "pattern": pattern,
+            "guard": guard,
+            "first_formatting": case.hidden_tokens_after,
+            "second_formatting": if_.hidden_tokens_before,
+            "third_formatting": if_.hidden_tokens_after,
+            "fourth_formatting": colon.hidden_tokens_before,
+            "fifth_formatting": colon.hidden_tokens_after,
+            "value": suite,
+        }]
+
+    # Pattern productions - use or_test to avoid conflicts with AS and VBAR
+    # AS pattern: pattern as name
+    @pg.production("pattern : or_pattern AS NAME")
+    def pattern_as(pack):
+        (pattern, as_, name) = pack
+        return {
+            "type": "pattern_as",
+            "pattern": pattern,
+            "name": name.value,
+            "first_formatting": as_.hidden_tokens_before,
+            "second_formatting": as_.hidden_tokens_after,
+        }
+
+    # OR pattern: pattern | pattern (left-recursive)
+    @pg.production("or_pattern : or_pattern VBAR base_pattern")
+    def pattern_or(pack):
+        (or_pattern, vbar, base_pattern) = pack
+        # Flatten nested OR patterns
+        if isinstance(or_pattern, dict) and or_pattern.get("type") == "pattern_or":
+            return {
+                "type": "pattern_or",
+                "patterns": or_pattern["patterns"] + [{
+                    "type": "comma",
+                    "first_formatting": vbar.hidden_tokens_before,
+                    "second_formatting": vbar.hidden_tokens_after,
+                }, base_pattern],
+            }
+        return {
+            "type": "pattern_or",
+            "patterns": [or_pattern, {
+                "type": "comma",
+                "first_formatting": vbar.hidden_tokens_before,
+                "second_formatting": vbar.hidden_tokens_after,
+            }, base_pattern],
+        }
+
+    @pg.production("or_pattern : base_pattern")
+    def or_pattern_base(pack):
+        (base_pattern,) = pack
+        return base_pattern
+
+    @pg.production("pattern : or_pattern")
+    def pattern_or_pattern(pack):
+        (or_pattern,) = pack
+        return or_pattern
+
+    # Base pattern - use or_test to avoid conflict with guard's IF keyword
+    # (test includes conditional expressions like 'x if cond else y')
+    @pg.production("base_pattern : or_test")
+    def base_pattern_or_test(pack):
+        (or_test,) = pack
+        return or_test

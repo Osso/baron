@@ -105,6 +105,8 @@ GROUP_SPACE_AFTER = BOTH + (
     "DEF",
     "CLASS",
     "LAMBDA",
+    "MATCH",
+    "CASE",
 )
 
 
