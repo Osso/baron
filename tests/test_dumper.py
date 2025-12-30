@@ -688,6 +688,7 @@ def test_float_with_underscores():
 
 # PEP 695 - Type Parameter Syntax
 
+
 def test_funcdef_type_params():
     check_dumps("def foo[T](): pass\n")
     check_dumps("def foo[T, U](): pass\n")
@@ -745,6 +746,7 @@ def test_classdef_type_params_with_bound():
 
 
 # PEP 634 - Pattern Matching
+
 
 def test_match_simple():
     check_dumps("match x:\n    case 1:\n        pass\n")

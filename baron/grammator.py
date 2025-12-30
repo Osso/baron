@@ -3,18 +3,22 @@ from .grammator_data_structures import include_data_structures
 from .grammator_imports import include_imports
 from .grammator_operators import include_operators
 from .grammator_primitives import include_primivites
-from .parser import (BaronParserGenerator,
-                     ParsingError)
+from .parser import BaronParserGenerator, ParsingError
 from .token import BaronToken
-from .tokenizer import (TOKENS,
-                        tokenize,
-                        tokenize_current_keywords)
+from .tokenizer import TOKENS, tokenize, tokenize_current_keywords
 
 # pylint: disable=unused-variable
 
 
 def generate_parse(print_function):
-    pg = BaronParserGenerator(tuple([x.upper() for x in tokenize_current_keywords(print_function)] + [x[1] for x in TOKENS] + ["ENDMARKER", "INDENT", "DEDENT"]), cache_id="baron")
+    pg = BaronParserGenerator(
+        tuple(
+            [x.upper() for x in tokenize_current_keywords(print_function)]
+            + [x[1] for x in TOKENS]
+            + ["ENDMARKER", "INDENT", "DEDENT"]
+        ),
+        cache_id="baron",
+    )
 
     @pg.production("main : statements")
     def main(pack):
@@ -29,13 +33,14 @@ def generate_parse(print_function):
     @pg.production("statements : statement SEMICOLON")
     def statement_semicolon(pack):
         (statement, semicolon) = pack
-        return statement +\
-            [{
+        return statement + [
+            {
                 "type": "semicolon",
                 "first_formatting": semicolon.hidden_tokens_before,
                 "second_formatting": semicolon.hidden_tokens_after,
-                "value": ";"
-            }]
+                "value": ";",
+            }
+        ]
 
     # @pg.production("statements : DEDENT COMMENT INDENT")
     # def statement_comment(pack):
@@ -74,12 +79,14 @@ def generate_parse(print_function):
         if endl.hidden_tokens_after and endl.hidden_tokens_after[0]["type"] == "space":
             indent = endl.hidden_tokens_after[0]["value"]
             endl.hidden_tokens_after = endl.hidden_tokens_after[1:]
-        return [{
-            "type": "endl",
-            "value": endl.value,
-            "formatting": endl.hidden_tokens_before,
-            "indent": indent,
-        }] + endl.hidden_tokens_after
+        return [
+            {
+                "type": "endl",
+                "value": endl.value,
+                "formatting": endl.hidden_tokens_before,
+                "indent": indent,
+            }
+        ] + endl.hidden_tokens_after
 
     @pg.production("left_parenthesis : LEFT_PARENTHESIS")
     def left_parenthesis(pack):
@@ -89,16 +96,19 @@ def generate_parse(print_function):
     @pg.production("endl : COMMENT ENDL")
     def comment(pack):
         (comment_, endl) = pack
-        return [{
-            "type": "comment",
-            "value": comment_.value,
-            "formatting": comment_.hidden_tokens_before,
-        }, {
-            "type": "endl",
-            "formatting": endl.hidden_tokens_before,
-            "indent": endl.hidden_tokens_after[0]["value"] if endl.hidden_tokens_after else "",
-            "value": endl.value
-        }]
+        return [
+            {
+                "type": "comment",
+                "value": comment_.value,
+                "formatting": comment_.hidden_tokens_before,
+            },
+            {
+                "type": "endl",
+                "formatting": endl.hidden_tokens_before,
+                "indent": endl.hidden_tokens_after[0]["value"] if endl.hidden_tokens_after else "",
+                "value": endl.value,
+            },
+        ]
 
     @pg.production("statement : ENDMARKER")
     def end(_):
@@ -114,13 +124,15 @@ def generate_parse(print_function):
     @pg.production("simple_stmt : small_stmt SEMICOLON endl")
     def simple_stmt_semicolon_endl(pack):
         (small_stmt, semicolon, endl) = pack
-        return [small_stmt,
-                {
-                    "type": "semicolon",
-                    "value": ";",
-                    "first_formatting": semicolon.hidden_tokens_before,
-                    "second_formatting": semicolon.hidden_tokens_after
-                }] + endl
+        return [
+            small_stmt,
+            {
+                "type": "semicolon",
+                "value": ";",
+                "first_formatting": semicolon.hidden_tokens_before,
+                "second_formatting": semicolon.hidden_tokens_after,
+            },
+        ] + endl
 
     @pg.production("simple_stmt : small_stmt endl")
     def simple_stmt(pack):
@@ -130,13 +142,15 @@ def generate_parse(print_function):
     @pg.production("simple_stmt : small_stmt SEMICOLON simple_stmt")
     def simple_stmt_semicolon(pack):
         (small_stmt, semicolon, simple_stmt) = pack
-        return [small_stmt,
-                {
-                    "type": "semicolon",
-                    "value": ";",
-                    "first_formatting": semicolon.hidden_tokens_before,
-                    "second_formatting": semicolon.hidden_tokens_after
-                }] + simple_stmt
+        return [
+            small_stmt,
+            {
+                "type": "semicolon",
+                "value": ";",
+                "first_formatting": semicolon.hidden_tokens_before,
+                "second_formatting": semicolon.hidden_tokens_after,
+            },
+        ] + simple_stmt
 
     @pg.production("small_stmt : flow_stmt")
     @pg.production("small_stmt : del_stmt")
@@ -183,22 +197,30 @@ def generate_parse(print_function):
         return {
             "async": True,
             "value": async_.value,
-            "formatting": [{'type': 'space', 'value': space.value}],
+            "formatting": [{"type": "space", "value": space.value}],
         }
 
     @pg.production("async_stmt : async with_stmt")
     @pg.production("async_stmt : async for_stmt")
     def async_stmt(pack):
-        (async_, statement,) = pack
+        (
+            async_,
+            statement,
+        ) = pack
 
         if async_["value"] != "async":
-            raise ParsingError("The only possible keyword before a '%s' is 'async', not '%s'" % (statement[0]["type"], async_["value"]))
+            raise ParsingError(
+                "The only possible keyword before a '{}' is 'async', not '{}'".format(
+                    statement[0]["type"], async_["value"]
+                )
+            )
 
         statement[0]["async"] = True
         statement[0]["async_formatting"] += async_["formatting"]
         return statement
 
     if not print_function:
+
         @pg.production("small_stmt : print_stmt")
         def print_statement(pack):
             (statement,) = pack
@@ -230,20 +252,26 @@ def generate_parse(print_function):
     @pg.production("with_stmt : WITH with_items COLON suite")
     def with_stmt(pack):
         (with_, with_items, colon, suite) = pack
-        return [{
-            "type": "with",
-            "async": False,
-            "async_formatting": [],
-            "value": suite,
-            "first_formatting": with_.hidden_tokens_after,
-            "second_formatting": colon.hidden_tokens_before,
-            "third_formatting": colon.hidden_tokens_after,
-            "contexts": with_items
-        }]
+        return [
+            {
+                "type": "with",
+                "async": False,
+                "async_formatting": [],
+                "value": suite,
+                "first_formatting": with_.hidden_tokens_after,
+                "second_formatting": colon.hidden_tokens_before,
+                "third_formatting": colon.hidden_tokens_after,
+                "contexts": with_items,
+            }
+        ]
 
     @pg.production("with_items : with_items comma with_item")
     def with_items_with_item(pack):
-        (with_items, comma, with_item,) = pack
+        (
+            with_items,
+            comma,
+            with_item,
+        ) = pack
         return with_items + [comma, with_item]
 
     @pg.production("with_items : with_item")
@@ -254,13 +282,7 @@ def generate_parse(print_function):
     @pg.production("with_item : test")
     def with_item(pack):
         (test,) = pack
-        return {
-            "type": "with_context_item",
-            "as": {},
-            "first_formatting": [],
-            "second_formatting": [],
-            "value": test
-        }
+        return {"type": "with_context_item", "as": {}, "first_formatting": [], "second_formatting": [], "value": test}
 
     @pg.production("with_item : test AS expr")
     def with_item_as(pack):
@@ -270,75 +292,87 @@ def generate_parse(print_function):
             "as": expr,
             "first_formatting": as_.hidden_tokens_before,
             "second_formatting": as_.hidden_tokens_after,
-            "value": test
+            "value": test,
         }
 
     @pg.production("classdef : CLASS NAME type_params COLON suite")
-    def class_stmt(pack,):
+    def class_stmt(
+        pack,
+    ):
         (class_, name, type_params, colon, suite) = pack
-        return [{
-            "type": "class",
-            "name": name.value,
-            "parenthesis": False,
-            "type_params": type_params["type_params"],
-            "type_params_first_formatting": type_params["first_formatting"],
-            "type_params_second_formatting": type_params["second_formatting"],
-            "type_params_third_formatting": type_params["third_formatting"],
-            "first_formatting": class_.hidden_tokens_after,
-            "second_formatting": [],
-            "third_formatting": [],
-            "fourth_formatting": [],
-            "fifth_formatting": colon.hidden_tokens_before,
-            "sixth_formatting": colon.hidden_tokens_after,
-            "inherit_from": [],
-            "decorators": [],
-            "value": suite,
-        }]
+        return [
+            {
+                "type": "class",
+                "name": name.value,
+                "parenthesis": False,
+                "type_params": type_params["type_params"],
+                "type_params_first_formatting": type_params["first_formatting"],
+                "type_params_second_formatting": type_params["second_formatting"],
+                "type_params_third_formatting": type_params["third_formatting"],
+                "first_formatting": class_.hidden_tokens_after,
+                "second_formatting": [],
+                "third_formatting": [],
+                "fourth_formatting": [],
+                "fifth_formatting": colon.hidden_tokens_before,
+                "sixth_formatting": colon.hidden_tokens_after,
+                "inherit_from": [],
+                "decorators": [],
+                "value": suite,
+            }
+        ]
 
     @pg.production("classdef : CLASS NAME type_params LEFT_PARENTHESIS RIGHT_PARENTHESIS COLON suite")
-    def class_stmt_parenthesis(pack,):
+    def class_stmt_parenthesis(
+        pack,
+    ):
         (class_, name, type_params, left_parenthesis, right_parenthesis, colon, suite) = pack
-        return [{
-            "type": "class",
-            "name": name.value,
-            "parenthesis": True,
-            "type_params": type_params["type_params"],
-            "type_params_first_formatting": type_params["first_formatting"],
-            "type_params_second_formatting": type_params["second_formatting"],
-            "type_params_third_formatting": type_params["third_formatting"],
-            "first_formatting": class_.hidden_tokens_after,
-            "second_formatting": left_parenthesis.hidden_tokens_before,
-            "third_formatting": left_parenthesis.hidden_tokens_after,
-            "fourth_formatting": right_parenthesis.hidden_tokens_before,
-            "fifth_formatting": right_parenthesis.hidden_tokens_after + colon.hidden_tokens_before,
-            "sixth_formatting": colon.hidden_tokens_after,
-            "inherit_from": [],
-            "decorators": [],
-            "value": suite,
-        }]
+        return [
+            {
+                "type": "class",
+                "name": name.value,
+                "parenthesis": True,
+                "type_params": type_params["type_params"],
+                "type_params_first_formatting": type_params["first_formatting"],
+                "type_params_second_formatting": type_params["second_formatting"],
+                "type_params_third_formatting": type_params["third_formatting"],
+                "first_formatting": class_.hidden_tokens_after,
+                "second_formatting": left_parenthesis.hidden_tokens_before,
+                "third_formatting": left_parenthesis.hidden_tokens_after,
+                "fourth_formatting": right_parenthesis.hidden_tokens_before,
+                "fifth_formatting": right_parenthesis.hidden_tokens_after + colon.hidden_tokens_before,
+                "sixth_formatting": colon.hidden_tokens_after,
+                "inherit_from": [],
+                "decorators": [],
+                "value": suite,
+            }
+        ]
 
     @pg.production("classdef : CLASS NAME type_params LEFT_PARENTHESIS testlist RIGHT_PARENTHESIS COLON suite")
     @pg.production("classdef : CLASS NAME type_params LEFT_PARENTHESIS argslist RIGHT_PARENTHESIS COLON suite")
-    def class_stmt_inherit(pack,):
+    def class_stmt_inherit(
+        pack,
+    ):
         (class_, name, type_params, left_parenthesis, testlist, right_parenthesis, colon, suite) = pack
-        return [{
-            "type": "class",
-            "name": name.value,
-            "parenthesis": True,
-            "type_params": type_params["type_params"],
-            "type_params_first_formatting": type_params["first_formatting"],
-            "type_params_second_formatting": type_params["second_formatting"],
-            "type_params_third_formatting": type_params["third_formatting"],
-            "first_formatting": class_.hidden_tokens_after,
-            "second_formatting": left_parenthesis.hidden_tokens_before,
-            "third_formatting": left_parenthesis.hidden_tokens_after,
-            "fourth_formatting": right_parenthesis.hidden_tokens_before,
-            "fifth_formatting": right_parenthesis.hidden_tokens_after + colon.hidden_tokens_before,
-            "sixth_formatting": colon.hidden_tokens_after,
-            "inherit_from": [testlist],
-            "decorators": [],
-            "value": suite,
-        }]
+        return [
+            {
+                "type": "class",
+                "name": name.value,
+                "parenthesis": True,
+                "type_params": type_params["type_params"],
+                "type_params_first_formatting": type_params["first_formatting"],
+                "type_params_second_formatting": type_params["second_formatting"],
+                "type_params_third_formatting": type_params["third_formatting"],
+                "first_formatting": class_.hidden_tokens_after,
+                "second_formatting": left_parenthesis.hidden_tokens_before,
+                "third_formatting": left_parenthesis.hidden_tokens_after,
+                "fourth_formatting": right_parenthesis.hidden_tokens_before,
+                "fifth_formatting": right_parenthesis.hidden_tokens_after + colon.hidden_tokens_before,
+                "sixth_formatting": colon.hidden_tokens_after,
+                "inherit_from": [testlist],
+                "decorators": [],
+                "value": suite,
+            }
+        ]
 
     @pg.production("decorated : decorators funcdef")
     @pg.production("decorated : decorators classdef")
@@ -349,7 +383,10 @@ def generate_parse(print_function):
 
     @pg.production("decorators : decorators decorator")
     def decorators_decorator(pack):
-        (decorators, decorator,) = pack
+        (
+            decorators,
+            decorator,
+        ) = pack
         return decorators + decorator
 
     @pg.production("decorators : decorator")
@@ -367,85 +404,108 @@ def generate_parse(print_function):
     @pg.production("decorator : AT dotted_name endl")
     def decorator(pack):
         (at, dotted_name, endl) = pack
-        return [{
-            "type": "decorator",
-            "value": {
-                "value": dotted_name,
-                "type": "dotted_name",
-            },
-            "call": {},
-            "formatting": at.hidden_tokens_after,
-        }] + endl
+        return [
+            {
+                "type": "decorator",
+                "value": {
+                    "value": dotted_name,
+                    "type": "dotted_name",
+                },
+                "call": {},
+                "formatting": at.hidden_tokens_after,
+            }
+        ] + endl
 
     @pg.production("decorator : AT dotted_name LEFT_PARENTHESIS RIGHT_PARENTHESIS endl")
     def decorator_empty_call(pack):
         (at, dotted_name, left_parenthesis, right_parenthesis, endl) = pack
-        return [{
-            "type": "decorator",
-            "value": {
-                "value": dotted_name,
-                "type": "dotted_name",
-            },
-            "call": {
-                "third_formatting": right_parenthesis.hidden_tokens_before,
-                "fourth_formatting": right_parenthesis.hidden_tokens_after,
-                "type": "call",
-                "first_formatting": left_parenthesis.hidden_tokens_before,
-                "value": [],
-                "second_formatting": left_parenthesis.hidden_tokens_after
-            },
-            "formatting": at.hidden_tokens_after,
-        }] + endl
+        return [
+            {
+                "type": "decorator",
+                "value": {
+                    "value": dotted_name,
+                    "type": "dotted_name",
+                },
+                "call": {
+                    "third_formatting": right_parenthesis.hidden_tokens_before,
+                    "fourth_formatting": right_parenthesis.hidden_tokens_after,
+                    "type": "call",
+                    "first_formatting": left_parenthesis.hidden_tokens_before,
+                    "value": [],
+                    "second_formatting": left_parenthesis.hidden_tokens_after,
+                },
+                "formatting": at.hidden_tokens_after,
+            }
+        ] + endl
 
     @pg.production("decorator : AT dotted_name LEFT_PARENTHESIS argslist RIGHT_PARENTHESIS endl")
     def decorator_call(pack):
         (at, dotted_name, left_parenthesis, argslist, right_parenthesis, endl) = pack
-        return [{
-            "type": "decorator",
-            "value": {
-                "value": dotted_name,
-                "type": "dotted_name",
-            },
-            "call": {
-                "third_formatting": right_parenthesis.hidden_tokens_before,
-                "fourth_formatting": right_parenthesis.hidden_tokens_after,
-                "type": "call",
-                "first_formatting": left_parenthesis.hidden_tokens_before,
-                "value": argslist,
-                "second_formatting": left_parenthesis.hidden_tokens_after
-            },
-            "formatting": at.hidden_tokens_after,
-        }] + endl
+        return [
+            {
+                "type": "decorator",
+                "value": {
+                    "value": dotted_name,
+                    "type": "dotted_name",
+                },
+                "call": {
+                    "third_formatting": right_parenthesis.hidden_tokens_before,
+                    "fourth_formatting": right_parenthesis.hidden_tokens_after,
+                    "type": "call",
+                    "first_formatting": left_parenthesis.hidden_tokens_before,
+                    "value": argslist,
+                    "second_formatting": left_parenthesis.hidden_tokens_after,
+                },
+                "formatting": at.hidden_tokens_after,
+            }
+        ] + endl
 
-    @pg.production("funcdef : async_maybe DEF NAME type_params LEFT_PARENTHESIS typed_parameters RIGHT_PARENTHESIS return_annotation COLON suite")
+    @pg.production(
+        "funcdef : async_maybe DEF NAME type_params LEFT_PARENTHESIS typed_parameters RIGHT_PARENTHESIS return_annotation COLON suite"
+    )
     def function_definition(pack):
-        (async_maybe, def_, name, type_params, left_parenthesis, typed_parameters, right_parenthesis, return_annotation, colon, suite) = pack
+        (
+            async_maybe,
+            def_,
+            name,
+            type_params,
+            left_parenthesis,
+            typed_parameters,
+            right_parenthesis,
+            return_annotation,
+            colon,
+            suite,
+        ) = pack
 
         if async_maybe["async"] and async_maybe["value"] != "async":
-            raise ParsingError("The only possible keyword before a 'def' is 'async', not '%s'" % async_maybe["value"])
+            raise ParsingError(
+                "The only possible keyword before a 'def' is 'async', not '{}'".format(async_maybe["value"])
+            )
 
-        return [{
-            "type": "def",
-            "async": async_maybe["async"],
-            "return_annotation": return_annotation["value"],
-            "return_annotation_first_formatting": return_annotation["first_formatting"],
-            "return_annotation_second_formatting": return_annotation["second_formatting"],
-            "async_formatting": async_maybe.get("formatting", []),
-            "decorators": [],
-            "name": name.value,
-            "type_params": type_params["type_params"],
-            "type_params_first_formatting": type_params["first_formatting"],
-            "type_params_second_formatting": type_params["second_formatting"],
-            "type_params_third_formatting": type_params["third_formatting"],
-            "first_formatting": def_.hidden_tokens_after,
-            "second_formatting": left_parenthesis.hidden_tokens_before,
-            "third_formatting": left_parenthesis.hidden_tokens_after,
-            "fourth_formatting": right_parenthesis.hidden_tokens_before,
-            "fifth_formatting": colon.hidden_tokens_before,
-            "sixth_formatting": colon.hidden_tokens_after,
-            "arguments": typed_parameters,
-            "value": suite,
-        }]
+        return [
+            {
+                "type": "def",
+                "async": async_maybe["async"],
+                "return_annotation": return_annotation["value"],
+                "return_annotation_first_formatting": return_annotation["first_formatting"],
+                "return_annotation_second_formatting": return_annotation["second_formatting"],
+                "async_formatting": async_maybe.get("formatting", []),
+                "decorators": [],
+                "name": name.value,
+                "type_params": type_params["type_params"],
+                "type_params_first_formatting": type_params["first_formatting"],
+                "type_params_second_formatting": type_params["second_formatting"],
+                "type_params_third_formatting": type_params["third_formatting"],
+                "first_formatting": def_.hidden_tokens_after,
+                "second_formatting": left_parenthesis.hidden_tokens_before,
+                "third_formatting": left_parenthesis.hidden_tokens_after,
+                "fourth_formatting": right_parenthesis.hidden_tokens_before,
+                "fifth_formatting": colon.hidden_tokens_before,
+                "sixth_formatting": colon.hidden_tokens_after,
+                "arguments": typed_parameters,
+                "value": suite,
+            }
+        ]
 
     @pg.production("return_annotation : ")
     def return_annotation_empty(pack):
@@ -487,11 +547,17 @@ def generate_parse(print_function):
     @pg.production("type_param_seq : type_param_seq COMMA type_param")
     def type_param_seq_multi(pack):
         type_param_seq, comma, type_param = pack
-        return type_param_seq + [{
-            "type": "comma",
-            "first_formatting": comma.hidden_tokens_before,
-            "second_formatting": comma.hidden_tokens_after,
-        }] + [type_param]
+        return (
+            type_param_seq
+            + [
+                {
+                    "type": "comma",
+                    "first_formatting": comma.hidden_tokens_before,
+                    "second_formatting": comma.hidden_tokens_after,
+                }
+            ]
+            + [type_param]
+        )
 
     @pg.production("type_param_seq : type_param")
     def type_param_seq_single(pack):
@@ -544,14 +610,21 @@ def generate_parse(print_function):
     @pg.production("argslist : argslist argument")
     @pg.production("typed_parameters : typed_parameters typed_parameter")
     @pg.production("parameters : parameters parameter")
-    def parameters_parameters_parameter(pack,):
-        (parameters, parameter,) = pack
+    def parameters_parameters_parameter(
+        pack,
+    ):
+        (
+            parameters,
+            parameter,
+        ) = pack
         return parameters + parameter
 
     @pg.production("argslist : argument")
     @pg.production("typed_parameters : typed_parameter")
     @pg.production("parameters : parameter")
-    def parameters_parameter(pack,):
+    def parameters_parameter(
+        pack,
+    ):
         (parameter,) = pack
         return parameter
 
@@ -573,46 +646,50 @@ def generate_parse(print_function):
     @pg.production("parameter : LEFT_PARENTHESIS name RIGHT_PARENTHESIS maybe_test")
     def parameter_fpdef(pack):
         (left_parenthesis, name, right_parenthesis, (equal, test)) = pack
-        return [{
-            "type": "def_argument",
-            "annotation": {},
-            "annotation_first_formatting": [],
-            "annotation_second_formatting": [],
-            "first_formatting": equal.hidden_tokens_before if equal else [],
-            "second_formatting": equal.hidden_tokens_after if equal else [],
-            "value": test,
-            "target": {
-                "type": "associative_parenthesis",
-                "first_formatting": left_parenthesis.hidden_tokens_before,
-                "second_formatting": left_parenthesis.hidden_tokens_after,
-                "third_formatting": right_parenthesis.hidden_tokens_before,
-                "fourth_formatting": right_parenthesis.hidden_tokens_after,
-                "value": name
+        return [
+            {
+                "type": "def_argument",
+                "annotation": {},
+                "annotation_first_formatting": [],
+                "annotation_second_formatting": [],
+                "first_formatting": equal.hidden_tokens_before if equal else [],
+                "second_formatting": equal.hidden_tokens_after if equal else [],
+                "value": test,
+                "target": {
+                    "type": "associative_parenthesis",
+                    "first_formatting": left_parenthesis.hidden_tokens_before,
+                    "second_formatting": left_parenthesis.hidden_tokens_after,
+                    "third_formatting": right_parenthesis.hidden_tokens_before,
+                    "fourth_formatting": right_parenthesis.hidden_tokens_after,
+                    "value": name,
+                },
             }
-        }]
+        ]
 
     @pg.production("typed_parameter : LEFT_PARENTHESIS fplist RIGHT_PARENTHESIS maybe_test")
     @pg.production("parameter : LEFT_PARENTHESIS fplist RIGHT_PARENTHESIS maybe_test")
     def parameter_fplist(pack):
         (left_parenthesis, fplist, right_parenthesis, (equal, test)) = pack
-        return [{
-            "type": "def_argument",
-            "annotation": {},
-            "annotation_first_formatting": [],
-            "annotation_second_formatting": [],
-            "first_formatting": equal.hidden_tokens_before if equal else [],
-            "second_formatting": equal.hidden_tokens_after if equal else [],
-            "value": test,
-            "target": {
-                "type": "tuple",
-                "with_parenthesis": True,
-                "first_formatting": left_parenthesis.hidden_tokens_after,
-                "second_formatting": left_parenthesis.hidden_tokens_before,
-                "third_formatting": right_parenthesis.hidden_tokens_before,
-                "fourth_formatting": right_parenthesis.hidden_tokens_after,
-                "value": fplist,
-            },
-        }]
+        return [
+            {
+                "type": "def_argument",
+                "annotation": {},
+                "annotation_first_formatting": [],
+                "annotation_second_formatting": [],
+                "first_formatting": equal.hidden_tokens_before if equal else [],
+                "second_formatting": equal.hidden_tokens_after if equal else [],
+                "value": test,
+                "target": {
+                    "type": "tuple",
+                    "with_parenthesis": True,
+                    "first_formatting": left_parenthesis.hidden_tokens_after,
+                    "second_formatting": left_parenthesis.hidden_tokens_before,
+                    "third_formatting": right_parenthesis.hidden_tokens_before,
+                    "fourth_formatting": right_parenthesis.hidden_tokens_after,
+                    "value": fplist,
+                },
+            }
+        ]
 
     @pg.production("fplist : fplist parameter")
     def fplist_recur(pack):
@@ -635,56 +712,64 @@ def generate_parse(print_function):
     @pg.production("argument : test maybe_test")
     def named_argument(pack):
         (name, (equal, test)) = pack
-        return [{
-            "type": "call_argument",
-            "first_formatting": equal.hidden_tokens_before if equal else [],
-            "second_formatting": equal.hidden_tokens_after if equal else [],
-            "value": test if equal else name,
-            "target": name if equal else {}
-        }]
+        return [
+            {
+                "type": "call_argument",
+                "first_formatting": equal.hidden_tokens_before if equal else [],
+                "second_formatting": equal.hidden_tokens_after if equal else [],
+                "value": test if equal else name,
+                "target": name if equal else {},
+            }
+        ]
 
     @pg.production("typed_parameter : name COLON test maybe_test")
     def parameter_annotation_with_default(pack):
         # name, (equal, test) = pack
         name, colon, annotation, (equal, test) = pack
-        return [{
-            "type": "def_argument",
-            "annotation": annotation,
-            "annotation_first_formatting": colon.hidden_tokens_before,
-            "annotation_second_formatting": colon.hidden_tokens_after,
-            "first_formatting": equal.hidden_tokens_before if equal else [],
-            "second_formatting": equal.hidden_tokens_after if equal else [],
-            "value": test,
-            "target": name
-        }]
+        return [
+            {
+                "type": "def_argument",
+                "annotation": annotation,
+                "annotation_first_formatting": colon.hidden_tokens_before,
+                "annotation_second_formatting": colon.hidden_tokens_after,
+                "first_formatting": equal.hidden_tokens_before if equal else [],
+                "second_formatting": equal.hidden_tokens_after if equal else [],
+                "value": test,
+                "target": name,
+            }
+        ]
 
     @pg.production("typed_parameter : name maybe_test")
     def parameter_alone_with_default(pack):
         name, (equal, test) = pack
-        return [{
-            "type": "def_argument",
-            "annotation": {},
-            "annotation_first_formatting": [],
-            "annotation_second_formatting": [],
-            "first_formatting": equal.hidden_tokens_before if equal else [],
-            "second_formatting": equal.hidden_tokens_after if equal else [],
-            "value": test,
-            "target": name
-        }]
+        return [
+            {
+                "type": "def_argument",
+                "annotation": {},
+                "annotation_first_formatting": [],
+                "annotation_second_formatting": [],
+                "first_formatting": equal.hidden_tokens_before if equal else [],
+                "second_formatting": equal.hidden_tokens_after if equal else [],
+                "value": test,
+                "target": name,
+            }
+        ]
 
     @pg.production("parameter : name maybe_test")
     def parameter_with_default(pack):
         name, (equal, test) = pack
-        return [{
-            "type": "def_argument",
-            "annotation": {},
-            "annotation_first_formatting": [],
-            "annotation_second_formatting": [],
-            "first_formatting": equal.hidden_tokens_before if equal else [],
-            "second_formatting": equal.hidden_tokens_after if equal else [],
-            "value": test,
-            "target": name
-        }]
+        return [
+            {
+                "type": "def_argument",
+                "annotation": {},
+                "annotation_first_formatting": [],
+                "annotation_second_formatting": [],
+                "first_formatting": equal.hidden_tokens_before if equal else [],
+                "second_formatting": equal.hidden_tokens_after if equal else [],
+                "value": test,
+                "target": name,
+            }
+        ]
 
     @pg.production("maybe_test : EQUAL test")
     def maybe_test(pack):
@@ -696,118 +781,151 @@ def generate_parse(print_function):
 
     @pg.production("argument : test comp_for")
     def generator_comprehension(pack):
-        (test, comp_for,) = pack
-        return [{
-            "type": "argument_generator_comprehension",
-            "result": test,
-            "generators": comp_for,
-        }]
+        (
+            test,
+            comp_for,
+        ) = pack
+        return [
+            {
+                "type": "argument_generator_comprehension",
+                "result": test,
+                "generators": comp_for,
+            }
+        ]
 
     @pg.production("argument : STAR test")
     def argument_star(pack):
-        (star, test,) = pack
-        return [{
-            "type": "list_argument",
-            "annotation": {},
-            "annotation_first_formatting": [],
-            "annotation_second_formatting": [],
-            "formatting": star.hidden_tokens_after,
-            "value": test,
-        }]
+        (
+            star,
+            test,
+        ) = pack
+        return [
+            {
+                "type": "list_argument",
+                "annotation": {},
+                "annotation_first_formatting": [],
+                "annotation_second_formatting": [],
+                "formatting": star.hidden_tokens_after,
+                "value": test,
+            }
+        ]
 
     @pg.production("argument : DOUBLE_STAR test")
     def argument_star_star(pack):
-        (double_star, test,) = pack
-        return [{
-            "type": "dict_argument",
-            "annotation": {},
-            "annotation_first_formatting": [],
-            "annotation_second_formatting": [],
-            "formatting": double_star.hidden_tokens_after,
-            "value": test,
-        }]
+        (
+            double_star,
+            test,
+        ) = pack
+        return [
+            {
+                "type": "dict_argument",
+                "annotation": {},
+                "annotation_first_formatting": [],
+                "annotation_second_formatting": [],
+                "formatting": double_star.hidden_tokens_after,
+                "value": test,
+            }
+        ]
 
     @pg.production("typed_parameter : STAR NAME COLON test")
     def typed_parameter_star(pack):
         (star, name, colon, test) = pack
-        return [{
-            "type": "list_argument",
-            "formatting": star.hidden_tokens_after,
-            "annotation": test,
-            "annotation_first_formatting": colon.hidden_tokens_before if colon else [],
-            "annotation_second_formatting": colon.hidden_tokens_after if colon else [],
-            "value": {
-                "type": "name",
-                "value": name.value,
+        return [
+            {
+                "type": "list_argument",
+                "formatting": star.hidden_tokens_after,
+                "annotation": test,
+                "annotation_first_formatting": colon.hidden_tokens_before if colon else [],
+                "annotation_second_formatting": colon.hidden_tokens_after if colon else [],
+                "value": {
+                    "type": "name",
+                    "value": name.value,
+                },
             }
-        }]
+        ]
 
     @pg.production("typed_parameter : DOUBLE_STAR NAME COLON test")
     def typed_parameter_double_star(pack):
         (double_star, name, colon, test) = pack
-        return [{
-            "type": "dict_argument",
-            "formatting": double_star.hidden_tokens_after,
-            "annotation": test,
-            "annotation_first_formatting": colon.hidden_tokens_before if colon else [],
-            "annotation_second_formatting": colon.hidden_tokens_after if colon else [],
-            "value": {
-                "type": "name",
-                "value": name.value,
+        return [
+            {
+                "type": "dict_argument",
+                "formatting": double_star.hidden_tokens_after,
+                "annotation": test,
+                "annotation_first_formatting": colon.hidden_tokens_before if colon else [],
+                "annotation_second_formatting": colon.hidden_tokens_after if colon else [],
+                "value": {
+                    "type": "name",
+                    "value": name.value,
+                },
             }
-        }]
+        ]
 
     # TODO refactor those 2 to standardize with argument_star and argument_star_star
     @pg.production("typed_parameter : STAR NAME")
     @pg.production("parameter : STAR NAME")
     def parameter_star(pack):
-        (star, name,) = pack
-        return [{
-            "type": "list_argument",
-            "annotation": {},
-            "annotation_first_formatting": [],
-            "annotation_second_formatting": [],
-            "formatting": star.hidden_tokens_after,
-            "value": {
-                "type": "name",
-                "value": name.value,
+        (
+            star,
+            name,
+        ) = pack
+        return [
+            {
+                "type": "list_argument",
+                "annotation": {},
+                "annotation_first_formatting": [],
+                "annotation_second_formatting": [],
+                "formatting": star.hidden_tokens_after,
+                "value": {
+                    "type": "name",
+                    "value": name.value,
+                },
             }
-        }]
+        ]
 
     # TODO refactor those 2 to standardize with argument_star and argument_star_star
     @pg.production("typed_parameter : STAR")
     @pg.production("parameter : STAR")
     def parameter_star_only(pack):
-        (star, ) = pack
-        return [{
-            "type": "kwargs_only_marker",
-            "formatting": star.hidden_tokens_after,
-        }]
+        (star,) = pack
+        return [
+            {
+                "type": "kwargs_only_marker",
+                "formatting": star.hidden_tokens_after,
+            }
+        ]
 
     @pg.production("typed_parameter : SLASH")
     @pg.production("parameter : SLASH")
     def parameter_slash_only(pack):
         (slash,) = pack
-        return [{
-            "type": "positional_only_marker",
-            "formatting": slash.hidden_tokens_after,
-        }]
+        return [
+            {
+                "type": "positional_only_marker",
+                "formatting": slash.hidden_tokens_after,
+            }
+        ]
 
     @pg.production("typed_parameter : DOUBLE_STAR NAME")
     @pg.production("parameter : DOUBLE_STAR NAME")
     def parameter_star_star(pack):
-        (double_star, name,) = pack
-        return [{
-            "type": "dict_argument",
-            "annotation": {},
-            "annotation_first_formatting": [],
-            "annotation_second_formatting": [],
-            "formatting": double_star.hidden_tokens_after,
-            "value": {
-                "type": "name",
-                "value": name.value,
-            },
-        }]
+        (
+            double_star,
+            name,
+        ) = pack
+        return [
+            {
+                "type": "dict_argument",
+                "annotation": {},
+                "annotation_first_formatting": [],
+                "annotation_second_formatting": [],
+                "formatting": double_star.hidden_tokens_after,
+                "value": {
+                    "type": "name",
+                    "value": name.value,
+                },
+            }
+        ]
 
     @pg.production("argument : comma")
     @pg.production("typed_parameter : comma")
@@ -823,7 +941,12 @@ def generate_parse(print_function):
 
     @pg.production("suite : endls INDENT statements DEDENT")
     def suite_indent(pack):
-        (endls, indent, statements, dedent,) = pack
+        (
+            endls,
+            indent,
+            statements,
+            dedent,
+        ) = pack
         return endls + statements
 
     @pg.production("endls : endls endl")
@@ -847,7 +970,7 @@ def generate_parse(print_function):
             "value": yield_expr["value"],
             "first_formatting": left_parenthesis.hidden_tokens_after,
             "second_formatting": yield_expr["formatting"],
-            "third_formatting": right_parenthesis.hidden_tokens_before
+            "third_formatting": right_parenthesis.hidden_tokens_before,
         }
 
     @pg.production("atom : BACKQUOTE testlist1 BACKQUOTE")
@@ -862,7 +985,11 @@ def generate_parse(print_function):
 
     @pg.production("testlist1 : test comma testlist1")
     def testlist1_double(pack):
-        (test, comma, test2,) = pack
+        (
+            test,
+            comma,
+            test2,
+        ) = pack
         return [test, comma] + test2
 
     @pg.production("testlist1 : test")
@@ -881,9 +1008,7 @@ def generate_parse(print_function):
     @pg.production("atom : COMPLEX")
     def int(pack):
         (number,) = pack
-        return {"type": "number",
-                "sub_type": number.name.lower(),
-                "value": number.value}
+        return {"type": "number", "sub_type": number.name.lower(), "value": number.value}
 
     @pg.production("atom : name")
     def atom_name(pack):
@@ -895,10 +1020,7 @@ def generate_parse(print_function):
         (string_chain,) = pack
         if len(string_chain) == 1:
             return string_chain[0]
-        return {
-            "type": "string_chain",
-            "value": string_chain
-        }
+        return {"type": "string_chain", "value": string_chain}
 
     @pg.production("strings : string strings")
     def strings_string_strings(pack):
@@ -921,12 +1043,14 @@ def generate_parse(print_function):
     @pg.production("string : INTERPOLATED_RAW_STRING")
     def string(pack):
         (string_,) = pack
-        return [{
-            "type": string_.name.lower(),
-            "value": string_.value,
-            "first_formatting": string_.hidden_tokens_before,
-            "second_formatting": string_.hidden_tokens_after,
-        }]
+        return [
+            {
+                "type": string_.name.lower(),
+                "value": string_.value,
+                "first_formatting": string_.hidden_tokens_before,
+                "second_formatting": string_.hidden_tokens_after,
+            }
+        ]
 
     @pg.production("comma : COMMA")
     def comma(pack):

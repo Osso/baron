@@ -1418,5 +1418,3 @@ def test_from_no_space_dot_no_sapceimport_b():
             }
         ],
     )
-
-
