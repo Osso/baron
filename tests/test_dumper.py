@@ -684,3 +684,61 @@ def test_positional_only_marker():
 
 def test_float_with_underscores():
     check_dumps("123_456.789_012")
+
+
+# PEP 695 - Type Parameter Syntax
+
+def test_funcdef_type_params():
+    check_dumps("def foo[T](): pass\n")
+    check_dumps("def foo[T, U](): pass\n")
+    check_dumps("def foo[ T ](): pass\n")
+    check_dumps("def foo[T,U,V](): pass\n")
+
+
+def test_funcdef_type_params_with_bound():
+    check_dumps("def foo[T: int](): pass\n")
+    check_dumps("def foo[T : int](): pass\n")
+    check_dumps("def foo[T: int, U: str](): pass\n")
+
+
+def test_funcdef_type_params_star():
+    check_dumps("def foo[*Ts](): pass\n")
+    check_dumps("def foo[* Ts](): pass\n")
+    check_dumps("def foo[T, *Ts](): pass\n")
+
+
+def test_funcdef_type_params_double_star():
+    check_dumps("def foo[**P](): pass\n")
+    check_dumps("def foo[** P](): pass\n")
+    check_dumps("def foo[T, **P](): pass\n")
+
+
+def test_funcdef_type_params_mixed():
+    check_dumps("def foo[T, *Ts, **P](): pass\n")
+    check_dumps("def foo[T: int, *Ts, **P](): pass\n")
+
+
+def test_async_funcdef_type_params():
+    check_dumps("async def foo[T](): pass\n")
+
+
+def test_classdef_type_params():
+    check_dumps("class Foo[T]: pass\n")
+    check_dumps("class Foo[T, U]: pass\n")
+    check_dumps("class Foo[ T ](): pass\n")
+
+
+def test_classdef_type_params_with_base():
+    check_dumps("class Foo[T](Bar): pass\n")
+    check_dumps("class Foo[T, U](Bar, Baz): pass\n")
+
+
+def test_classdef_type_params_with_bound():
+    check_dumps("class Foo[T: int]: pass\n")
+    check_dumps("class Foo[T: int](Bar): pass\n")
+
+
+# Note: type alias statements (PEP 695) are not yet supported
+# because 'type' is a soft keyword that conflicts with existing grammar rules.
+# def test_type_alias():
+#     check_dumps("type Point = tuple[float, float]")

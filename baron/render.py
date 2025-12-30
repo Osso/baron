@@ -276,6 +276,12 @@ nodes_rendering_order = {
         ("constant",   "class",             True),  # noqa
         ("formatting", "first_formatting",  True),  # noqa
         ("string",     "name",              True),  # noqa
+        ("formatting", "type_params_first_formatting", "type_params"),  # noqa
+        ("constant",   "[",                 "type_params"),  # noqa
+        ("formatting", "type_params_second_formatting", "type_params"),  # noqa
+        ("list",       "type_params",       "type_params"),  # noqa
+        ("formatting", "type_params_third_formatting", "type_params"),  # noqa
+        ("constant",   "]",                 "type_params"),  # noqa
         ("formatting", "second_formatting", True),  # noqa
         ("constant",   "(",                 "parenthesis"),  # noqa
         ("formatting", "third_formatting",  True),  # noqa
@@ -342,6 +348,12 @@ nodes_rendering_order = {
         ("constant",   "def",               True),  # noqa
         ("formatting", "first_formatting",  True),  # noqa
         ("string",     "name",              True),  # noqa
+        ("formatting", "type_params_first_formatting", "type_params"),  # noqa
+        ("constant",   "[",                 "type_params"),  # noqa
+        ("formatting", "type_params_second_formatting", "type_params"),  # noqa
+        ("list",       "type_params",       "type_params"),  # noqa
+        ("formatting", "type_params_third_formatting", "type_params"),  # noqa
+        ("constant",   "]",                 "type_params"),  # noqa
         ("formatting", "second_formatting", True),  # noqa
         ("constant",   "(",                 True),  # noqa
         ("formatting", "third_formatting",  True),  # noqa
@@ -765,6 +777,30 @@ nodes_rendering_order = {
         ("constant",   ":",                 True),  # noqa
         ("formatting", "sixth_formatting",  True),  # noqa
         ("list",       "value",             True),  # noqa
+    ],
+
+    # PEP 695 - Type Parameter Syntax
+    "type_param": [
+        ("formatting", "first_formatting",  True),  # noqa
+        ("string",     "name",              True),  # noqa
+        ("formatting", "second_formatting", "bound"),  # noqa
+        ("constant",   ":",                 "bound"),  # noqa
+        ("formatting", "third_formatting",  "bound"),  # noqa
+        ("key",        "bound",             "bound"),  # noqa
+    ],
+
+    "type_param_star": [
+        ("formatting", "first_formatting",  True),  # noqa
+        ("constant",   "*",                 True),  # noqa
+        ("formatting", "second_formatting", True),  # noqa
+        ("string",     "name",              True),  # noqa
+    ],
+
+    "type_param_double_star": [
+        ("formatting", "first_formatting",  True),  # noqa
+        ("constant",   "**",                True),  # noqa
+        ("formatting", "second_formatting", True),  # noqa
+        ("string",     "name",              True),  # noqa
     ],
 
     "finally": [

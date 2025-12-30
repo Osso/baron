@@ -271,13 +271,17 @@ def generate_parse(print_function):
             "value": test
         }
 
-    @pg.production("classdef : CLASS NAME COLON suite")
+    @pg.production("classdef : CLASS NAME type_params COLON suite")
     def class_stmt(pack,):
-        (class_, name, colon, suite) = pack
+        (class_, name, type_params, colon, suite) = pack
         return [{
             "type": "class",
             "name": name.value,
             "parenthesis": False,
+            "type_params": type_params["type_params"],
+            "type_params_first_formatting": type_params["first_formatting"],
+            "type_params_second_formatting": type_params["second_formatting"],
+            "type_params_third_formatting": type_params["third_formatting"],
             "first_formatting": class_.hidden_tokens_after,
             "second_formatting": [],
             "third_formatting": [],
@@ -289,13 +293,17 @@ def generate_parse(print_function):
             "value": suite,
         }]
 
-    @pg.production("classdef : CLASS NAME LEFT_PARENTHESIS RIGHT_PARENTHESIS COLON suite")
+    @pg.production("classdef : CLASS NAME type_params LEFT_PARENTHESIS RIGHT_PARENTHESIS COLON suite")
     def class_stmt_parenthesis(pack,):
-        (class_, name, left_parenthesis, right_parenthesis, colon, suite) = pack
+        (class_, name, type_params, left_parenthesis, right_parenthesis, colon, suite) = pack
         return [{
             "type": "class",
             "name": name.value,
             "parenthesis": True,
+            "type_params": type_params["type_params"],
+            "type_params_first_formatting": type_params["first_formatting"],
+            "type_params_second_formatting": type_params["second_formatting"],
+            "type_params_third_formatting": type_params["third_formatting"],
             "first_formatting": class_.hidden_tokens_after,
             "second_formatting": left_parenthesis.hidden_tokens_before,
             "third_formatting": left_parenthesis.hidden_tokens_after,
@@ -307,14 +315,18 @@ def generate_parse(print_function):
             "value": suite,
         }]
 
-    @pg.production("classdef : CLASS NAME LEFT_PARENTHESIS testlist RIGHT_PARENTHESIS COLON suite")
-    @pg.production("classdef : CLASS NAME LEFT_PARENTHESIS argslist RIGHT_PARENTHESIS COLON suite")
+    @pg.production("classdef : CLASS NAME type_params LEFT_PARENTHESIS testlist RIGHT_PARENTHESIS COLON suite")
+    @pg.production("classdef : CLASS NAME type_params LEFT_PARENTHESIS argslist RIGHT_PARENTHESIS COLON suite")
     def class_stmt_inherit(pack,):
-        (class_, name, left_parenthesis, testlist, right_parenthesis, colon, suite) = pack
+        (class_, name, type_params, left_parenthesis, testlist, right_parenthesis, colon, suite) = pack
         return [{
             "type": "class",
             "name": name.value,
             "parenthesis": True,
+            "type_params": type_params["type_params"],
+            "type_params_first_formatting": type_params["first_formatting"],
+            "type_params_second_formatting": type_params["second_formatting"],
+            "type_params_third_formatting": type_params["third_formatting"],
             "first_formatting": class_.hidden_tokens_after,
             "second_formatting": left_parenthesis.hidden_tokens_before,
             "third_formatting": left_parenthesis.hidden_tokens_after,
@@ -403,9 +415,9 @@ def generate_parse(print_function):
             "formatting": at.hidden_tokens_after,
         }] + endl
 
-    @pg.production("funcdef : async_maybe DEF NAME LEFT_PARENTHESIS typed_parameters RIGHT_PARENTHESIS return_annotation COLON suite")
+    @pg.production("funcdef : async_maybe DEF NAME type_params LEFT_PARENTHESIS typed_parameters RIGHT_PARENTHESIS return_annotation COLON suite")
     def function_definition(pack):
-        (async_maybe, def_, name, left_parenthesis, typed_parameters, right_parenthesis, return_annotation, colon, suite) = pack
+        (async_maybe, def_, name, type_params, left_parenthesis, typed_parameters, right_parenthesis, return_annotation, colon, suite) = pack
 
         if async_maybe["async"] and async_maybe["value"] != "async":
             raise ParsingError("The only possible keyword before a 'def' is 'async', not '%s'" % async_maybe["value"])
@@ -419,6 +431,10 @@ def generate_parse(print_function):
             "async_formatting": async_maybe.get("formatting", []),
             "decorators": [],
             "name": name.value,
+            "type_params": type_params["type_params"],
+            "type_params_first_formatting": type_params["first_formatting"],
+            "type_params_second_formatting": type_params["second_formatting"],
+            "type_params_third_formatting": type_params["third_formatting"],
             "first_formatting": def_.hidden_tokens_after,
             "second_formatting": left_parenthesis.hidden_tokens_before,
             "third_formatting": left_parenthesis.hidden_tokens_after,
@@ -444,6 +460,83 @@ def generate_parse(print_function):
             "value": test,
             "first_formatting": right_arrow.hidden_tokens_before,
             "second_formatting": right_arrow.hidden_tokens_after,
+        }
+
+    # PEP 695 - Type Parameter Syntax
+    @pg.production("type_params : ")
+    def type_params_empty(pack):
+        return {
+            "type_params": [],
+            "first_formatting": [],
+            "second_formatting": [],
+            "third_formatting": [],
+        }
+
+    @pg.production("type_params : LEFT_SQUARE_BRACKET type_param_seq RIGHT_SQUARE_BRACKET")
+    def type_params(pack):
+        left_bracket, type_param_seq, right_bracket = pack
+        return {
+            "type_params": type_param_seq,
+            "first_formatting": left_bracket.hidden_tokens_before,
+            "second_formatting": left_bracket.hidden_tokens_after,
+            "third_formatting": right_bracket.hidden_tokens_before,
+        }
+
+    @pg.production("type_param_seq : type_param_seq COMMA type_param")
+    def type_param_seq_multi(pack):
+        type_param_seq, comma, type_param = pack
+        return type_param_seq + [{
+            "type": "comma",
+            "first_formatting": comma.hidden_tokens_before,
+            "second_formatting": comma.hidden_tokens_after,
+        }] + [type_param]
+
+    @pg.production("type_param_seq : type_param")
+    def type_param_seq_single(pack):
+        (type_param,) = pack
+        return [type_param]
+
+    @pg.production("type_param : NAME")
+    def type_param_name(pack):
+        (name,) = pack
+        return {
+            "type": "type_param",
+            "name": name.value,
+            "bound": {},
+            "first_formatting": name.hidden_tokens_before,
+            "second_formatting": name.hidden_tokens_after,
+        }
+
+    @pg.production("type_param : NAME COLON test")
+    def type_param_bound(pack):
+        name, colon, test = pack
+        return {
+            "type": "type_param",
+            "name": name.value,
+            "bound": test,
+            "first_formatting": name.hidden_tokens_before,
+            "second_formatting": colon.hidden_tokens_before,
+            "third_formatting": colon.hidden_tokens_after,
+        }
+
+    @pg.production("type_param : STAR NAME")
+    def type_param_star(pack):
+        star, name = pack
+        return {
+            "type": "type_param_star",
+            "name": name.value,
+            "first_formatting": star.hidden_tokens_before,
+            "second_formatting": star.hidden_tokens_after,
+        }
+
+    @pg.production("type_param : DOUBLE_STAR NAME")
+    def type_param_double_star(pack):
+        double_star, name = pack
+        return {
+            "type": "type_param_double_star",
+            "name": name.value,
+            "first_formatting": double_star.hidden_tokens_before,
+            "second_formatting": double_star.hidden_tokens_after,
         }
 
     @pg.production("argslist : argslist argument")
